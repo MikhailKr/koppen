@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: ghcr.io/${GITHUB_REPOSITORY}:latest
+    image: cr.yandex/koppen/koppen:latest
     restart: unless-stopped
     ports:
       - "80:8000"
