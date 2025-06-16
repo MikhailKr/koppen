@@ -50,12 +50,12 @@ jobs:
           
       - name: Run Ruff linting
         run: |
-          uv pip run ruff check .
-          uv pip run ruff format --check .
+          uv run ruff check .
+          uv run ruff format --check .
           
       - name: Run tests
         run: |
-          uv pip run pytest tests/ -v
+          uv run pytest tests/ -v
 
   build-and-push:
     needs: test-and-lint
