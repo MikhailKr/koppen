@@ -7,8 +7,7 @@ RUN pip install --upgrade pip \
     && pip install uv
 
 # Copy pyproject.toml and uv.lock if present
-COPY koppen/pyproject.toml ./
-COPY koppen/uv.lock ./
+COPY pyproject.toml ./
 
 # Install dependencies using uv
 RUN uv pip install --system -e .
