@@ -1,10 +1,30 @@
-name: Tests & Lint
+name: CI/CD
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag for the image'
+        required: false
+        default: 'latest'
+        type: string
+      environment:
+        description: 'Environment to deploy to'
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+        required: true
+        default: 'development'
+
+env:
+  REGISTRY: cr.yandex
+  IMAGE_NAME: koppen
 
 jobs:
   test-and-lint:
@@ -30,9 +50,40 @@ jobs:
           
       - name: Run Ruff linting
         run: |
-          uv run ruff check .
-          uv run ruff format --check .
+          uv pip run ruff check .
+          uv pip run ruff format --check .
           
       - name: Run tests
         run: |
-          uv run pytest tests/ -v
+          uv pip run pytest tests/ -v
+
+  build-and-push:
+    needs: test-and-lint
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    environment: ${{ github.event.inputs.environment || 'development' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Yandex Cloud Container Registry
+        run: |
+          echo "${{ secrets.YC_SERVICE_ACCOUNT_KEY_JSON }}" > key.json
+          cat key.json | docker login --username json_key --password-stdin cr.yandex
+          rm key.json
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.version || 'latest' }}
+            ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
