@@ -73,9 +73,10 @@ jobs:
 
       - name: Login to Yandex Cloud Container Registry
         run: |
-          echo "${{ secrets.YC_SERVICE_ACCOUNT_KEY_JSON }}" > key.json
-          cat key.json | docker login --username json_key --password-stdin cr.yandex
-          rm key.json
+          echo "${{ secrets.YA_DOCKER_OAUTH }}"|docker login \
+            --username oauth \
+            --password-stdin \
+          cr.yandex
 
       - name: Build and push
         uses: docker/build-push-action@v5
