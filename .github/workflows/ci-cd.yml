@@ -107,7 +107,7 @@ jobs:
             # Login to Yandex Cloud Registry
             echo "${{ secrets.YA_DOCKER_OAUTH }}" | docker login --username oauth --password-stdin cr.yandex
             
-            # Pull the new image
+            # Pull the new imagee
             docker pull ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.version || 'latest' }}
             
             # Deploy using docker-compose
