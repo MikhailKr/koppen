@@ -88,3 +88,37 @@ jobs:
             ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'development' }}
+
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            # Login to Yandex Cloud Registry
+            echo "${{ secrets.YA_DOCKER_OAUTH }}" | docker login --username oauth --password-stdin cr.yandex
+            
+            # Pull the new image
+            docker pull ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.version || 'latest' }}
+            
+            # Deploy using docker-compose
+            export YC_REGISTRY_ID=${{ secrets.YC_REGISTRY_ID }}
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            
+            # Stop the current containers
+            docker compose -f docker-compose.prod.yml down
+            
+            # Start with the new image
+            docker compose -f docker-compose.prod.yml up -d
+            
+            # Clean up old images
+            docker image prune -f
