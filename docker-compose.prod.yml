@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: cr.yandex/koppen/koppen:latest
+    image: cr.yandex/crpdcq8rd3suju9jjn8k/koppen:latest
     restart: unless-stopped
     ports:
       - "80:8000"
