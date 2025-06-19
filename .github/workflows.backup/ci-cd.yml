@@ -69,7 +69,7 @@ jobs:
             docker pull ${{ env.REGISTRY }}/${{ env.REGISTRY_ID }}/${{ env.IMAGE_NAME }}:latest
             
             # Stop and remove the old container if it exists
-            docker compose -f docker-compose.prod.yml down || true
+            docker-compose -f docker-compose.prod.yml down || true
             
             # Start the new container
-            docker compose -f docker-compose.prod.yml up -d
+            docker-compose -f docker-compose.prod.yml up -d
