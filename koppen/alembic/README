@@ -1,0 +1,10 @@
+Generic single-database configuration with an async dbapi.
+
+Useful commands:
+
+1. alembic revision --autogenerate  -m "First migration" --rev-id 01  (Alembic сверяет модели в приложении со структурой таблиц в базе данных и создаёт миграцию, в которой описаны найденные отличия)
+2. alembic upgrade head  (Alembic применяет все миграции к базе данных)
+3. alembic downgrade base (Alembic откатывает все миграции к базе данных)
+4. alembic history -v (Alembic выводит историю миграций)
+
+
