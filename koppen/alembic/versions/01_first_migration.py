@@ -2,7 +2,7 @@
 
 Revision ID: 01
 Revises: 
-Create Date: 2025-06-27 22:43:53.704282
+Create Date: 2025-06-28 14:07:26.728515
 
 """
 from alembic import op
@@ -35,10 +35,12 @@ def upgrade():
     sa.Column('last_name', sa.String(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('password', sa.String(), nullable=False),
+    sa.Column('login', sa.String(), nullable=False),
     sa.Column('is_user', sa.Boolean(), server_default=sa.text('(true)'), nullable=False),
     sa.Column('is_admin', sa.Boolean(), server_default=sa.text('(false)'), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('login')
     )
     op.create_table('windfarm',
     sa.Column('name', sa.String(length=255), nullable=False),

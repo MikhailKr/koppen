@@ -17,6 +17,7 @@ from admin.views.wind_energy_unit import (
     LocationAdmin,
 )
 from core.db import AsyncSessionLocal
+from admin.views.user import UserAdmin
 
 ADMIN_APP_VIEWS = [
     WindTurbineAdmin,
@@ -24,6 +25,7 @@ ADMIN_APP_VIEWS = [
     WindFarmAdmin,
     WindTurbineFleetAdmin,
     LocationAdmin,
+    UserAdmin
 ]
 app = FastAPI(title=settings.app_title)
 app.add_middleware(

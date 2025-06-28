@@ -10,6 +10,7 @@ class User(Base):
     last_name: Mapped[str]
     email: Mapped[str]
     password: Mapped[str]
+    login: Mapped[str] = mapped_column(unique=True, nullable=False)
 
     is_user: Mapped[bool] = mapped_column(
         default=True, server_default=text("true"), nullable=False
