@@ -25,7 +25,7 @@ ADMIN_APP_VIEWS = [
     WindFarmAdmin,
     WindTurbineFleetAdmin,
     LocationAdmin,
-    UserAdmin
+    UserAdmin,
 ]
 app = FastAPI(title=settings.app_title)
 app.add_middleware(
@@ -51,7 +51,6 @@ def create_admin(app: FastAPI) -> None:
 create_admin(app)
 
 app.include_router(main_router)
-
 
 
 if __name__ == "__main__":
