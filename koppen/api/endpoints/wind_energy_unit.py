@@ -3,15 +3,12 @@
 # TODO: finish wind_energy_unit_block. Make it work and make it looks fine and deploy it to gitlab
 
 from fastapi import APIRouter, Path
-from pydantic import BaseModel
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import Depends, HTTPException
 from sqlalchemy import select
 from core.db import get_async_session
 from sqlalchemy.orm import joinedload, selectinload
-from sqlalchemy import exc
 from fastapi import status
 from sqlalchemy.ext.asyncio import AsyncSession
-from core.config import settings
 from models.wind_energy_unit import (
     Location,
     PowerCurve,

@@ -1,6 +1,4 @@
-from enum import Enum
-from fastapi import FastAPI, Query, Form
-from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI
 import uvicorn
 from sqladmin import Admin
 from core.config import settings
