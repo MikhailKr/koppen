@@ -129,10 +129,10 @@ jobs:
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
 
             # Stop the current containers
-            docker compose -f docker-compose.prod.yml down
+            docker-compose -f docker-compose.prod.yml down
 
             # Start with the new image
-            docker compose -f docker-compose.prod.yml up -d
+            docker-compose -f docker-compose.prod.yml up -d
 
             # Clean up old images
             docker image prune -f
