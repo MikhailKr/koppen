@@ -9,6 +9,7 @@ from core.db import get_async_session
 from sqlalchemy.orm import joinedload, selectinload
 from fastapi import status
 from sqlalchemy.ext.asyncio import AsyncSession
+from core.auth import get_current_user
 from models.wind_energy_unit import (
     Location,
     PowerCurve,
@@ -33,7 +34,7 @@ from schemas.wind_energy_unit import (
     WindTurbineUpdate,
 )
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 @router.get(

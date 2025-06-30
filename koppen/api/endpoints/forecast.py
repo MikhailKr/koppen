@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api_clients.open_meteo import OpenMeteoAsyncClient
 from core.db import get_async_session
+from core.auth import get_current_user
 from models.wind_energy_unit import WindFarm, WindTurbineFleet, WindTurbine
 from schemas.forecasts import WeatherResponse
 from sqlalchemy.orm import selectinload
@@ -13,7 +14,7 @@ from windpowerlib import WindTurbine as WindTurbineWPL
 from windpowerlib import WindFarm as WindFarmWPL
 from windpowerlib import ModelChain, TurbineClusterModelChain
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 @router.get("/{wind_farm_id}")
