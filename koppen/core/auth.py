@@ -6,9 +6,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.authentication import (
-    AuthenticationBackend
-)
+from starlette.authentication import AuthenticationBackend
 from starlette.requests import Request
 from models.user import User
 from core.db import AsyncSessionLocal, get_async_session
@@ -24,9 +22,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
+
 def get_password_hash(password):
     print("here!!")
     return pwd_context.hash(password)
+
 
 async def authenticate_user(username: str, password: str, session: AsyncSession):
     print(f"username: {username}, password: {password}")
@@ -39,15 +39,19 @@ async def authenticate_user(username: str, password: str, session: AsyncSession)
         return None
     return user
 
+
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.utcnow() + (
+        expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
+
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
-    session: AsyncSession = Depends(get_async_session)
+    session: AsyncSession = Depends(get_async_session),
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -69,7 +73,6 @@ async def get_current_user(
         raise credentials_exception
 
 
-
 class AdminAuth(AuthenticationBackend):
     def __init__(self, secret_key: str):
         self.secret_key = secret_key
@@ -78,12 +81,12 @@ class AdminAuth(AuthenticationBackend):
     async def login(self, request: Request) -> bool:
         form = await request.form()
         username, password = form["username"], form["password"]
-        
+
         async with AsyncSessionLocal() as session:
             user = await authenticate_user(username, password, session)
             if not user:
                 return False
-            
+
         access_token = create_access_token(data={"sub": username})
         request.session.update({"token": access_token})
         return True

@@ -19,6 +19,7 @@ from admin.views.wind_energy_unit import (
 from core.db import AsyncSessionLocal
 from admin.views.user import UserAdmin
 from starlette.middleware.sessions import SessionMiddleware
+
 ADMIN_APP_VIEWS = [
     WindTurbineAdmin,
     PowerCurveAdmin,
@@ -27,9 +28,7 @@ ADMIN_APP_VIEWS = [
     LocationAdmin,
     UserAdmin,
 ]
-app = FastAPI(
-    title=settings.app_title
-)
+app = FastAPI(title=settings.app_title)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allows all origins (for development only!)
@@ -38,11 +37,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-app.add_middleware(
-    SessionMiddleware,
-    secret_key=SECRET_KEY
-)
-
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 
 def create_admin(app: FastAPI) -> None:
