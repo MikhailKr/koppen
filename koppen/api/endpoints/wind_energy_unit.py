@@ -10,6 +10,8 @@ from sqlalchemy.orm import joinedload, selectinload
 from fastapi import status
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.auth import get_current_user
+
+from models.forecast import Forecast
 from models.wind_energy_unit import (
     Location,
     PowerCurve,
@@ -25,6 +27,7 @@ from schemas.wind_energy_unit import (
     PowerCurveUpdate,
     WindFarmCreate,
     WindFarmDB,
+    WindFarmForecastCreate,
     WindFarmUpdate,
     WindTurbineCreate,
     WindTurbineDB,
@@ -145,6 +148,43 @@ async def update_wind_farm(
     result = await session.execute(stmt)
     wind_farm_obj = result.scalars().first()
     return wind_farm_obj
+
+
+@router.post("/wind_farms/{wind_farm_id}/forecasts")
+async def create_forecast(
+    wind_farm_id: int,
+    wind_farm_forecast: WindFarmForecastCreate,
+    session: AsyncSession = Depends(get_async_session),
+):
+    """
+    Placeholder for creating a forecast for a wind farm.
+    This function should be implemented to handle the creation of forecasts.
+    """
+    stmt = select(WindFarm).where(WindFarm.id == wind_farm_id)
+    result = await session.execute(stmt)
+    wind_farm_obj = result.scalars().first()
+
+    if not wind_farm_obj:
+        raise HTTPException(status_code=404, detail="Wind farm not found")
+
+    # Here you would implement the logic to create a forecast
+    # For now, we just return a placeholder response
+    return {
+        "message": "Forecast creation is not yet implemented",
+        "wind_farm_id": wind_farm_id,
+        "forecast_data": wind_farm_forecast.model_dump(),
+    }
+
+
+@router.get("/wind_farms/{wind_farm_id}/forecasts")
+async def get_wind_farm_forecasts(
+    wind_farm_id: int,
+    session: AsyncSession = Depends(get_async_session),
+):
+    stmt = select(Forecast).where(Forecast.wind_farm_id == wind_farm_id)
+    result = await session.execute(stmt)
+    wind_farm_forecast_obj = result.scalars().all()
+    return wind_farm_forecast_obj
 
 
 @router.delete("/wind_farms/{wind_farm_id}", status_code=status.HTTP_204_NO_CONTENT)

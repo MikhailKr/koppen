@@ -39,6 +39,15 @@ class WindFarmUpdate(BaseModel):
     location: LocationUpdate | None
 
 
+class WindFarmForecastCreate(BaseModel):
+    time_resolution: str
+    repeat_daily: bool = False
+    daily_time: str | None = None
+    repeat_hourly: bool = False
+    hourly_minute: int | None = None
+    wind_farm_id: int
+
+
 class PowerCurveDB(BaseModel):
     id: int
     wind_speed_value_map: dict[float, float]

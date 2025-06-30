@@ -20,6 +20,7 @@ class WindFarm(Base):
     location = relationship("Location", back_populates="wind_farm")
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     user = relationship("User", back_populates="wind_farms")
+    forecasts = relationship("Forecast", back_populates="wind_farm")
 
     def __str__(self):
         return (

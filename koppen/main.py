@@ -19,6 +19,7 @@ from admin.views.wind_energy_unit import (
 from core.db import AsyncSessionLocal
 from admin.views.user import UserAdmin
 from starlette.middleware.sessions import SessionMiddleware
+from admin.views.forecast import ForecastAdmin
 
 ADMIN_APP_VIEWS = [
     WindTurbineAdmin,
@@ -27,6 +28,7 @@ ADMIN_APP_VIEWS = [
     WindTurbineFleetAdmin,
     LocationAdmin,
     UserAdmin,
+    ForecastAdmin,
 ]
 app = FastAPI(title=settings.app_title)
 app.add_middleware(
