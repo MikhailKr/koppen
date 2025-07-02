@@ -17,3 +17,10 @@ dependencies = [
     "aiohttp-client-cache>=0.13.0",
     "tenacity>=9.1.2",
 ]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["koppen"]
