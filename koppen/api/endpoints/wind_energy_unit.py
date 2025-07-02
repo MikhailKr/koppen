@@ -155,7 +155,6 @@ async def get_wind_farm(
     wind_farm_id: int,
     session: AsyncSession = Depends(get_async_session),
 ):
-
     stmt = (
         select(WindFarm)
         .where(WindFarm.id == wind_farm_id)
