@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from datetime import time
 
 
 class LocationDB(BaseModel):
@@ -17,14 +18,9 @@ class LocationUpdate(BaseModel):
     latitude: float
 
 
-class WindFarmDB(BaseModel):
-    id: int
-    name: str
-    description: str
-    location: LocationDB
-
-    class Config:
-        orm_mode = True
+class LocationRetrive(BaseModel):
+    longitude: float
+    latitude: float
 
 
 class WindFarmCreate(BaseModel):
@@ -46,6 +42,18 @@ class WindFarmForecastCreate(BaseModel):
     repeat_hourly: bool = False
     hourly_minute: int | None = None
     wind_farm_id: int
+
+
+class ForecastDB(BaseModel):
+    time_resolution: str
+    repeat_daily: bool = False
+    daily_time: time | None = None
+    repeat_hourly: bool = False
+    hourly_minute: int | None = None
+    wind_farm_id: int
+
+    class Config:
+        orm_mode = True
 
 
 class PowerCurveDB(BaseModel):
@@ -91,6 +99,9 @@ class WindTurbineFleetDB(BaseModel):
     number_of_turbines: int
     wind_turbine: WindTurbineDB
 
+    class Config:
+        orm_mode = True
+
 
 class WindTurbineFleetCreate(BaseModel):
     number_of_turbines: int
@@ -100,3 +111,15 @@ class WindTurbineFleetCreate(BaseModel):
 class WindTurbineFleetUpdate(BaseModel):
     number_of_turbines: int | None = None
     wind_turbine_id: int | None = None
+
+
+class WindFarmDB(BaseModel):
+    id: int
+    name: str
+    description: str
+    location: LocationDB
+    wind_turbine_fleet: list[WindTurbineFleetDB]
+    forecasts: list[ForecastDB]
+
+    class Config:
+        orm_mode = True

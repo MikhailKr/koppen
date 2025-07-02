@@ -150,6 +150,32 @@ async def update_wind_farm(
     return wind_farm_obj
 
 
+@router.get("/wind_farms/{wind_farm_id}", response_model=WindFarmDB)
+async def get_wind_farm(
+    wind_farm_id: int,
+    session: AsyncSession = Depends(get_async_session),
+):
+
+    stmt = (
+        select(WindFarm)
+        .where(WindFarm.id == wind_farm_id)
+        .options(
+            selectinload(WindFarm.location),
+            selectinload(WindFarm.forecasts),
+            selectinload(WindFarm.wind_turbine_fleet).options(
+                selectinload(WindTurbineFleet.wind_turbine).selectinload(
+                    WindTurbine.power_curve
+                )
+            ),
+        )
+    )
+    result = await session.execute(stmt)
+    wind_farm_obj = result.scalars().first()
+    if not wind_farm_obj:
+        raise HTTPException(status_code=404, detail="Wind farm not found")
+    return wind_farm_obj
+
+
 @router.post("/wind_farms/{wind_farm_id}/forecasts")
 async def create_forecast(
     wind_farm_id: int,
