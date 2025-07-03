@@ -1,15 +1,15 @@
 # Crud for wind turbine
 
 # TODO: finish wind_energy_unit_block. Make it work and make it looks fine and deploy it to gitlab
+from sqlalchemy.exc import IntegrityError
 
-from fastapi import APIRouter, Path
+from fastapi import APIRouter, Path, Response
 from fastapi import Depends, HTTPException
 from sqlalchemy import select
 from core.db import get_async_session
 from sqlalchemy.orm import joinedload, selectinload
 from fastapi import status
 from sqlalchemy.ext.asyncio import AsyncSession
-from core.auth import get_current_user
 
 from models.forecast import Forecast
 from models.wind_energy_unit import (
@@ -37,7 +37,8 @@ from schemas.wind_energy_unit import (
     WindTurbineUpdate,
 )
 
-router = APIRouter(dependencies=[Depends(get_current_user)])
+# router = APIRouter(dependencies=[Depends(get_current_user)])
+router = APIRouter()
 
 
 @router.get(
@@ -68,43 +69,102 @@ async def create_location(
 
 
 @router.post(
-    "/wind_farms", response_model=WindFarmDB, status_code=status.HTTP_201_CREATED
+    "/wind_farms",
+    response_model=WindFarmDB,
+    status_code=status.HTTP_201_CREATED,
+    description="Create a new wind farm,location, wind_turbine_fleets, and forecast",
 )
 async def create_wind_farm(
     wind_farm: WindFarmCreate,
     session: AsyncSession = Depends(get_async_session),
 ):
-    stmt = select(Location).where(
-        Location.latitude == wind_farm.location.latitude,
-        Location.longitude == wind_farm.location.longitude,
-    )
-    result = await session.execute(stmt)
-    location = result.scalars().first()
+    try:
+        async with session.begin():
+            # 1. Create Location
+            new_location = Location(
+                longitude=wind_farm.location.longitude,
+                latitude=wind_farm.location.latitude,
+            )
+            session.add(new_location)
+            await session.flush()
 
-    if not location:
-        location = Location(
-            latitude=wind_farm.location.latitude, longitude=wind_farm.location.longitude
-        )
-        session.add(location)
-        await session.commit()
-        await session.refresh(location)
+            # 2. Create WindFarm
+            new_wind_farm = WindFarm(
+                name=wind_farm.name,
+                description=wind_farm.description,
+                location_id=new_location.id,
+                user_id=wind_farm.user_id,
+            )
+            session.add(new_wind_farm)
+            await session.flush()
 
-    wind_farm_obj = WindFarm(
-        name=wind_farm.name,
-        description=wind_farm.description,
-        location_id=location.id,
-    )
-    session.add(wind_farm_obj)
-    await session.commit()
-    await session.refresh(wind_farm_obj)
-    stmt = (
-        select(WindFarm)
-        .options(selectinload(WindFarm.location))
-        .where(WindFarm.id == wind_farm_obj.id)
-    )
-    result = await session.execute(stmt)
-    wind_farm_obj = result.scalars().first()
-    return wind_farm_obj
+            # 3. Create Forecasts (as a list)
+            for forecast_data in wind_farm.forecasts:
+                new_forecast = Forecast(
+                    time_resolution=forecast_data.time_resolution,
+                    repeat_daily=forecast_data.repeat_daily,
+                    daily_time=forecast_data.daily_time,
+                    repeat_hourly=forecast_data.repeat_hourly,
+                    hourly_minute=forecast_data.hourly_minute,
+                    wind_farm_id=new_wind_farm.id,
+                )
+                session.add(new_forecast)
+
+            # 4. Create WindTurbineFleets
+            for fleet in wind_farm.wind_turbine_fleet:
+                new_fleet = WindTurbineFleet(
+                    number_of_turbines=fleet.number_of_turbines,
+                    wind_turbine_id=fleet.wind_turbine_id,
+                    wind_farm_id=new_wind_farm.id,
+                )
+                session.add(new_fleet)
+
+            await session.flush()
+
+            return Response(status_code=status.HTTP_201_CREATED)
+    except IntegrityError:
+        await session.rollback()
+        raise
+
+
+# @router.post(
+#     "/wind_farms", response_model=WindFarmDB, status_code=status.HTTP_201_CREATED
+# )
+# async def create_wind_farm(
+#     wind_farm: WindFarmCreate,
+#     session: AsyncSession = Depends(get_async_session),
+# ):
+#     stmt = select(Location).where(
+#         Location.latitude == wind_farm.location.latitude,
+#         Location.longitude == wind_farm.location.longitude,
+#     )
+#     result = await session.execute(stmt)
+#     location = result.scalars().first()
+
+#     if not location:
+#         location = Location(
+#             latitude=wind_farm.location.latitude, longitude=wind_farm.location.longitude
+#         )
+#         session.add(location)
+#         await session.commit()
+#         await session.refresh(location)
+
+#     wind_farm_obj = WindFarm(
+#         name=wind_farm.name,
+#         description=wind_farm.description,
+#         location_id=location.id,
+#     )
+#     session.add(wind_farm_obj)
+#     await session.commit()
+#     await session.refresh(wind_farm_obj)
+#     stmt = (
+#         select(WindFarm)
+#         .options(selectinload(WindFarm.location))
+#         .where(WindFarm.id == wind_farm_obj.id)
+#     )
+#     result = await session.execute(stmt)
+#     wind_farm_obj = result.scalars().first()
+#     return wind_farm_obj
 
 
 @router.patch("/wind_farms/{wind_farm_id}", response_model=WindFarmDB)

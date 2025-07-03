@@ -1,14 +1,10 @@
 from pydantic import BaseModel, Field
 from datetime import time
+from models.forecast import TimeResolutionEnum
 
 
 class LocationDB(BaseModel):
     id: int
-    longitude: float
-    latitude: float
-
-
-class LocationCreate(BaseModel):
     longitude: float
     latitude: float
 
@@ -23,29 +19,19 @@ class LocationRetrive(BaseModel):
     latitude: float
 
 
-class WindFarmCreate(BaseModel):
-    name: str
-    description: str
-    location: LocationCreate
-
-
 class WindFarmUpdate(BaseModel):
     name: str | None
     description: str | None
     location: LocationUpdate | None
 
 
+class LocationCreate(BaseModel):
+    longitude: float
+    latitude: float
+
+
 class WindFarmForecastCreate(BaseModel):
-    time_resolution: str
-    repeat_daily: bool = False
-    daily_time: str | None = None
-    repeat_hourly: bool = False
-    hourly_minute: int | None = None
-    wind_farm_id: int
-
-
-class ForecastDB(BaseModel):
-    time_resolution: str
+    time_resolution: TimeResolutionEnum
     repeat_daily: bool = False
     daily_time: time | None = None
     repeat_hourly: bool = False
@@ -54,6 +40,33 @@ class ForecastDB(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class WindTurbineFleetCreate(BaseModel):
+    number_of_turbines: int
+    wind_turbine_id: int
+
+
+class WindFarmCreate(BaseModel):
+    name: str
+    description: str
+    location: LocationCreate
+    user_id: int
+    forecasts: list[WindFarmForecastCreate]
+    wind_turbine_fleet: list[WindTurbineFleetCreate]
+
+
+class ForecastDB(BaseModel):
+    time_resolution: TimeResolutionEnum
+    repeat_daily: bool = False
+    daily_time: time | None = None
+    repeat_hourly: bool = False
+    hourly_minute: int | None = None
+    wind_farm_id: int
+
+    class Config:
+        orm_mode = True
+        use_enum_values = True  # Ensures enum values are shown in OpenAPI/Swagger
 
 
 class PowerCurveDB(BaseModel):
@@ -97,15 +110,10 @@ class WindTurbineUpdate(BaseModel):
 class WindTurbineFleetDB(BaseModel):
     id: int
     number_of_turbines: int
-    wind_turbine: WindTurbineDB
+    wind_turbine: WindTurbineDB | None = None
 
     class Config:
         orm_mode = True
-
-
-class WindTurbineFleetCreate(BaseModel):
-    number_of_turbines: int
-    wind_turbine_id: int
 
 
 class WindTurbineFleetUpdate(BaseModel):
