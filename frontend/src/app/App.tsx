@@ -14,7 +14,6 @@ import Header from "../shared/widgets/Header/Header";
 import { AddWindFarmPage } from "../pages/AddWindFarm/AddWindFarmPage";
 import { AnalyticsPage } from "../pages/Analytics/AnalyticsPage";
 import { ForecastsPage } from "../pages/Forecasts/ForecastsPage";
-import EditWindFarmPage from "../pages/EditWindFarm/EditWindFarmPage";
 import { WindFarmInfoPage } from "../pages/FarmInfo/WindFarmInfoPage";
 import { AppProvider } from "../shared/contexts/AppProviderContext";
 
@@ -43,8 +42,6 @@ const App: React.FC = () => {
           />
 
           <Route path={appRoutes.farmAdd} element={<AddWindFarmPage />} />
-
-          <Route path={appRoutes.farmEdit} element={<EditWindFarmPage />} />
 
           <Route path={appRoutes.farmView} element={<WindFarmInfoPage />} />
 

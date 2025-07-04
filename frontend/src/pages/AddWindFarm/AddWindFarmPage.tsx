@@ -18,10 +18,9 @@ const newWindFarm: WindFarmFormData = {
   latitude: 0,
   longitude: 0,
   turbines: [],
-  forecastName: "",
-  granularity: "hourly",
-  horizon: "",
-  updateFrequency: "",
+  forecast: {
+    time_resolution: "minute",
+  },
 };
 
 export const AddWindFarmPage: FC = () => {
