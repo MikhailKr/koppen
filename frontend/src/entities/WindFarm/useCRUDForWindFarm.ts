@@ -24,7 +24,13 @@ export const useCRUDForWindFarm = () => {
 
   const deleteWindFarm = useCallback(
     async (windFarmId: number) => {
-      await removeWindFarm({ windFarmId }).unwrap();
+      try {
+        await removeWindFarm({ windFarmId }).unwrap();
+
+        return { isSuccess: true };
+      } catch {
+        return { isSuccess: false };
+      }
     },
     [removeWindFarm],
   );
