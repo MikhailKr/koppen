@@ -9,11 +9,18 @@ import {
   StepLabel,
   MenuItem,
   IconButton,
+  Select,
+  FormControl,
+  InputLabel,
+  FormControlLabel,
+  Switch,
+  FormGroup,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import type { WindFarmFormData } from "../../entities/WindFarm/WindFarm";
 import Grid from "@mui/material/Grid";
+import { useReferences } from "../../shared/contexts/ReferencesContext";
 
 interface Props {
   windFarm: WindFarmFormData;
@@ -23,8 +30,16 @@ interface Props {
 
 const steps = ["Create a new wind farm", "Create a new forecast model"];
 
+const TIME_RESOLUTIONS = [
+  { label: "Minute", value: "minute" },
+  { label: "Hour", value: "hour" },
+  { label: "Day", value: "day" },
+];
+
 const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
   const [activeStep, setActiveStep] = useState(0);
+
+  const { turbines: turbinesModels } = useReferences();
 
   const { control, handleSubmit, trigger } = useForm<WindFarmFormData>({
     defaultValues: windFarm,
@@ -106,6 +121,7 @@ const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
                     <TextField
                       {...field}
                       label="Latitude"
+                      type="number"
                       fullWidth
                       error={!!fieldState.error}
                       helperText={fieldState.error?.message}
@@ -122,6 +138,7 @@ const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
                     <TextField
                       {...field}
                       label="Longitude"
+                      type="number"
                       fullWidth
                       error={!!fieldState.error}
                       helperText={fieldState.error?.message}
@@ -141,20 +158,37 @@ const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
               >
                 <Grid size={5}>
                   <Controller
-                    name={`turbines.${index}.model`}
+                    name={`turbines.${index}.modelId`}
                     control={control}
                     rules={{ required: "Model is required" }}
                     render={({ field, fieldState }) => (
-                      <TextField
-                        {...field}
-                        label="Model"
-                        fullWidth
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                      />
+                      <FormControl fullWidth error={!!fieldState.error}>
+                        <InputLabel id={`model-label-${index}`}>
+                          Model
+                        </InputLabel>
+                        <Select
+                          labelId={`model-label-${index}`}
+                          {...field}
+                          value={field.value || ""}
+                          label="Model"
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                          }}
+                        >
+                          <MenuItem value="">
+                            <em>Select model</em>
+                          </MenuItem>
+                          {turbinesModels?.map((model) => (
+                            <MenuItem key={model.id} value={model.id}>
+                              {model.turbine_type}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     )}
                   />
                 </Grid>
+
                 <Grid size={5}>
                   <Controller
                     name={`turbines.${index}.number`}
@@ -165,12 +199,14 @@ const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
                         {...field}
                         label="Number"
                         fullWidth
+                        type="number"
                         error={!!fieldState.error}
                         helperText={fieldState.error?.message}
                       />
                     )}
                   />
                 </Grid>
+
                 <Grid size={2}>
                   <IconButton onClick={() => remove(index)}>
                     <DeleteIcon color="error" />
@@ -179,8 +215,9 @@ const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
               </Grid>
             ))}
 
+            {/* Кнопка добавления */}
             <Button
-              onClick={() => append({ model: "", number: "" })}
+              onClick={() => append({ modelId: -1, modelName: "", number: 0 })}
               sx={{ mt: 2 }}
             >
               Add Wind Turbine
@@ -201,78 +238,83 @@ const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
             </Typography>
 
             <Controller
-              name="forecastName"
+              name="forecast.time_resolution"
               control={control}
-              rules={{ required: "Forecast name is required" }}
+              rules={{ required: "Time resolution is required" }}
               render={({ field, fieldState }) => (
-                <TextField
-                  {...field}
-                  label="Forecast name"
+                <FormControl
                   fullWidth
                   margin="normal"
                   error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
+                >
+                  <InputLabel>Time resolution</InputLabel>
+                  <Select
+                    {...field}
+                    label="Time resolution"
+                    value={field.value || ""}
+                    onChange={(e) => field.onChange(e.target.value)}
+                  >
+                    <MenuItem value="">
+                      <em>Select resolution</em>
+                    </MenuItem>
+                    {TIME_RESOLUTIONS.map((opt) => (
+                      <MenuItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            />
+
+            <Controller
+              name="forecast.repeat_daily"
+              control={control}
+              render={({ field }) => (
+                <FormGroup sx={{ mt: 2 }}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={!!field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                      />
+                    }
+                    label="Repeat Daily"
+                  />
+                </FormGroup>
+              )}
+            />
+
+            <Controller
+              name="forecast.repeat_hourly"
+              control={control}
+              render={({ field }) => (
+                <FormGroup sx={{ mt: 2 }}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={!!field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                      />
+                    }
+                    label="Repeat Hourly"
+                  />
+                </FormGroup>
+              )}
+            />
+
+            <Controller
+              name="forecast.hourly_minute"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Hourly Minute"
+                  type="number"
+                  fullWidth
+                  margin="normal"
+                  InputProps={{ inputProps: { min: 0, max: 59 } }}
                 />
-              )}
-            />
-
-            <Controller
-              name="granularity"
-              control={control}
-              rules={{ required: "Granularity is required" }}
-              render={({ field, fieldState }) => (
-                <TextField
-                  {...field}
-                  select
-                  label="Granularity"
-                  fullWidth
-                  margin="normal"
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                >
-                  <MenuItem value="hourly">Hourly</MenuItem>
-                  <MenuItem value="daily">Daily</MenuItem>
-                </TextField>
-              )}
-            />
-
-            <Controller
-              name="horizon"
-              control={control}
-              rules={{ required: "Horizon is required" }}
-              render={({ field, fieldState }) => (
-                <TextField
-                  {...field}
-                  select
-                  label="Horizon"
-                  fullWidth
-                  margin="normal"
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                >
-                  <MenuItem value="1d">1 day</MenuItem>
-                  <MenuItem value="7d">7 days</MenuItem>
-                </TextField>
-              )}
-            />
-
-            <Controller
-              name="updateFrequency"
-              control={control}
-              rules={{ required: "Update frequency is required" }}
-              render={({ field, fieldState }) => (
-                <TextField
-                  {...field}
-                  select
-                  label="Update frequency"
-                  fullWidth
-                  margin="normal"
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                >
-                  <MenuItem value="hourly">Hourly</MenuItem>
-                  <MenuItem value="daily">Daily</MenuItem>
-                </TextField>
               )}
             />
 

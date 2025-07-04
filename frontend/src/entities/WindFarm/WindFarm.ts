@@ -1,7 +1,18 @@
 export interface WindTurbine {
-  model: string;
-  number: string;
+  modelName: string;
+  modelId: number;
+  number: number;
 }
+
+export type TimeResolutionEnum = "minute" | "hour" | "day";
+
+export type WindFarmForecast = {
+  time_resolution: TimeResolutionEnum;
+  repeat_daily?: boolean;
+  daily_time?: string | null;
+  repeat_hourly?: boolean;
+  hourly_minute?: number | null;
+};
 
 export interface WindFarmFormData {
   id: string;
@@ -10,8 +21,5 @@ export interface WindFarmFormData {
   latitude: number;
   longitude: number;
   turbines: WindTurbine[];
-  forecastName: string;
-  granularity: "hourly" | "daily";
-  horizon: string;
-  updateFrequency: string;
+  forecast: WindFarmForecast;
 }

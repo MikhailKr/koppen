@@ -37,6 +37,14 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.windFarmUpdate,
       }),
     }),
+    getWindFarmWindEnergyUnitsWindFarmsWindFarmIdGet: build.query<
+      GetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetApiResponse,
+      GetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
+      }),
+    }),
     deleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDelete: build.mutation<
       DeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteApiResponse,
       DeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteApiArg
@@ -249,6 +257,11 @@ export type UpdateWindFarmWindEnergyUnitsWindFarmsWindFarmIdPatchApiArg = {
   windFarmId: number;
   windFarmUpdate: WindFarmUpdate;
 };
+export type GetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetApiResponse =
+  /** status 200 Successful Response */ WindFarmDb;
+export type GetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetApiArg = {
+  windFarmId: number;
+};
 export type DeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteApiResponse =
   unknown;
 export type DeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteApiArg = {
@@ -360,11 +373,40 @@ export type LocationDb = {
   longitude: number;
   latitude: number;
 };
+export type PowerCurveDb = {
+  id: number;
+  wind_speed_value_map: {
+    [key: string]: number;
+  };
+};
+export type WindTurbineDb = {
+  id: number;
+  hub_height: number;
+  turbine_type: string;
+  nominal_power: number;
+  power_curve: PowerCurveDb | null;
+};
+export type WindTurbineFleetDb = {
+  id: number;
+  number_of_turbines: number;
+  wind_turbine?: WindTurbineDb | null;
+};
+export type TimeResolutionEnum = "minute" | "hour" | "day";
+export type ForecastDb = {
+  time_resolution: TimeResolutionEnum;
+  repeat_daily?: boolean;
+  daily_time?: string | null;
+  repeat_hourly?: boolean;
+  hourly_minute?: number | null;
+  wind_farm_id: number;
+};
 export type WindFarmDb = {
   id: number;
   name: string;
   description: string;
   location: LocationDb;
+  wind_turbine_fleet: WindTurbineFleetDb[];
+  forecasts: ForecastDb[];
 };
 export type ValidationError = {
   loc: (string | number)[];
@@ -378,10 +420,25 @@ export type LocationCreate = {
   longitude: number;
   latitude: number;
 };
+export type WindFarmForecastCreate = {
+  time_resolution: TimeResolutionEnum;
+  repeat_daily?: boolean;
+  daily_time?: string | null;
+  repeat_hourly?: boolean;
+  hourly_minute?: number | null;
+  wind_farm_id: number;
+};
+export type WindTurbineFleetCreate = {
+  number_of_turbines: number;
+  wind_turbine_id: number;
+};
 export type WindFarmCreate = {
   name: string;
   description: string;
   location: LocationCreate;
+  user_id: number;
+  forecasts: WindFarmForecastCreate[];
+  wind_turbine_fleet: WindTurbineFleetCreate[];
 };
 export type LocationUpdate = {
   longitude: number;
@@ -392,20 +449,6 @@ export type WindFarmUpdate = {
   description: string | null;
   location: LocationUpdate | null;
 };
-export type WindFarmForecastCreate = {
-  time_resolution: string;
-  repeat_daily?: boolean;
-  daily_time?: string | null;
-  repeat_hourly?: boolean;
-  hourly_minute?: number | null;
-  wind_farm_id: number;
-};
-export type PowerCurveDb = {
-  id: number;
-  wind_speed_value_map: {
-    [key: string]: number;
-  };
-};
 export type PowerCurveCreate = {
   wind_speed_value_map: {
     [key: string]: number;
@@ -415,13 +458,6 @@ export type PowerCurveUpdate = {
   wind_speed_value_map: {
     [key: string]: number;
   };
-};
-export type WindTurbineDb = {
-  id: number;
-  hub_height: number;
-  turbine_type: string;
-  nominal_power: number;
-  power_curve: PowerCurveDb | null;
 };
 export type WindTurbineCreate = {
   hubHeight: number;
@@ -434,15 +470,6 @@ export type WindTurbineUpdate = {
   turbine_type?: string | null;
   nominal_power?: number | null;
   power_curve_id?: number | null;
-};
-export type WindTurbineFleetDb = {
-  id: number;
-  number_of_turbines: number;
-  wind_turbine: WindTurbineDb;
-};
-export type WindTurbineFleetCreate = {
-  number_of_turbines: number;
-  wind_turbine_id: number;
 };
 export type WindTurbineFleetUpdate = {
   number_of_turbines?: number | null;
@@ -461,6 +488,7 @@ export const {
   useCreateWindFarmWindEnergyUnitsWindFarmsPostMutation,
   useCreateLocationWindEnergyUnitsLocationPostMutation,
   useUpdateWindFarmWindEnergyUnitsWindFarmsWindFarmIdPatchMutation,
+  useGetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetQuery,
   useDeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteMutation,
   useCreateForecastWindEnergyUnitsWindFarmsWindFarmIdForecastsPostMutation,
   useGetWindFarmForecastsWindEnergyUnitsWindFarmsWindFarmIdForecastsGetQuery,
@@ -482,3 +510,6 @@ export const {
   useLoginAuthTokenPostMutation,
   useForecastForecastWindFarmIdGetQuery,
 } = injectedRtkApi;
+
+export const useLazyForecastForecastWindFarmIdGetQuery =
+  injectedRtkApi.endpoints.forecastForecastWindFarmIdGet.useLazyQuery;

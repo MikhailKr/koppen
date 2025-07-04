@@ -1,10 +1,8 @@
 import { useState } from "react";
 import type { WindFarmFormData } from "./WindFarm";
 import {
-  useCreateForecastWindEnergyUnitsWindFarmsWindFarmIdForecastsPostMutation,
   useCreateWindFarmWindEnergyUnitsWindFarmsPostMutation,
   type WindFarmCreate,
-  type WindFarmForecastCreate,
 } from "../../shared/api/api";
 
 const mapFormDataToWindFarmContract = (
@@ -16,19 +14,19 @@ const mapFormDataToWindFarmContract = (
     longitude: windFarmData.longitude,
     latitude: windFarmData.latitude,
   },
-});
-
-// todo: Понять что делать с маппингом
-const mapFormDataToForecastContract = (
-  windfarmId: number,
-  windFarmData: WindFarmFormData,
-): WindFarmForecastCreate => ({
-  time_resolution: "hour",
-  repeat_daily: windFarmData.granularity === "daily",
-  // daily_time?: string | null;
-  repeat_hourly: windFarmData.granularity === "hourly",
-  // hourly_minute?: number | null;
-  wind_farm_id: windfarmId,
+  forecasts: [
+    {
+      ...windFarmData.forecast,
+      // ignore ?
+      wind_farm_id: 0,
+    },
+  ],
+  wind_turbine_fleet: windFarmData.turbines.map((x) => ({
+    wind_turbine_id: x.modelId,
+    number_of_turbines: x.number,
+  })),
+  // ignore ?
+  user_id: 0,
 });
 
 type CreateError = {
@@ -38,6 +36,7 @@ type CreateError = {
 
 type useCreateFarmResult = {
   createWindFarm: (
+    // eslint-disable-next-line no-unused-vars
     windFarmData: WindFarmFormData,
   ) => Promise<{ isSuccess: boolean }>;
   isLoading: boolean;
@@ -51,8 +50,6 @@ export function useCreateFarm(): useCreateFarmResult {
 
   const [createWindFarmRequest] =
     useCreateWindFarmWindEnergyUnitsWindFarmsPostMutation();
-  const [createForecastRequest] =
-    useCreateForecastWindEnergyUnitsWindFarmsWindFarmIdForecastsPostMutation();
 
   const createWindFarm = async (
     windFarmData: WindFarmFormData,
@@ -67,24 +64,6 @@ export function useCreateFarm(): useCreateFarmResult {
         setError({
           error: true,
           message: "Error while trying to create wind farm",
-        });
-        return { isSuccess: false };
-      }
-
-      const farmId = result.data.id;
-
-      const forecastResult = await createForecastRequest({
-        windFarmForecastCreate: mapFormDataToForecastContract(
-          farmId,
-          windFarmData,
-        ),
-        windFarmId: farmId,
-      });
-
-      if (forecastResult.error) {
-        setError({
-          error: true,
-          message: "Error while trying to create forecast",
         });
         return { isSuccess: false };
       }

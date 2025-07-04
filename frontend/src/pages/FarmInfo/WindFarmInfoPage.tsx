@@ -1,23 +1,14 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import {
-  Container,
-  Typography,
-  CircularProgress,
-  Paper,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-  Box,
-} from "@mui/material";
+import { Container, Typography, CircularProgress, Box } from "@mui/material";
 import { useWindFarmInfo } from "../../entities/WindFarm/useWindFarmInfo";
+import WindFarmTurbines from "./WindFarmTurbines";
+import WindFarmForecasts from "./WindFarmForecasts";
+import { WindFarmGeneralnfo } from "./WindFarmGeneralnfo";
 
 export const WindFarmInfoPage: React.FC = () => {
   const { id: windFarmId } = useParams();
-  const { data, isLoading, forecasts, isForecastsLoading } = useWindFarmInfo(
-    windFarmId || "",
-  );
+  const { windFarm, isLoading, isError } = useWindFarmInfo(Number(windFarmId));
 
   if (isLoading) {
     return (
@@ -30,68 +21,24 @@ export const WindFarmInfoPage: React.FC = () => {
     );
   }
 
-  if (!data) return null;
+  if (!windFarm || isError)
+    return (
+      <Typography variant="h6" sx={{ mt: 2 }}>
+        Some error happend :(
+      </Typography>
+    );
 
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        {data.name}
-      </Typography>
-      <Typography variant="subtitle1" gutterBottom>
-        {data.description}
-      </Typography>
-
-      <Paper sx={{ p: 2, mb: 4 }}>
-        <Typography variant="h6">General Information</Typography>
-        <Typography>
-          Coordinates: {data.latitude}, {data.longitude}
-        </Typography>
-        <Typography>Granularity: {data.granularity}</Typography>
-        <Typography>Horizon: {data.horizon}</Typography>
-        <Typography>Update Frequency: {data.updateFrequency}</Typography>
-      </Paper>
-
-      <Paper sx={{ p: 2, mb: 4 }}>
-        <Typography variant="h6">Turbines</Typography>
-        <List>
-          {data.turbines.map((turbine, index) => (
-            <ListItem key={index}>
-              <ListItemText
-                primary={`Model: ${turbine.model}`}
-                secondary={`Number: ${turbine.number}`}
-              />
-            </ListItem>
-          ))}
-        </List>
-      </Paper>
-
-      <Paper sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          Power Forecast
-        </Typography>
-        {isForecastsLoading ? (
-          <Box textAlign="center" py={2}>
-            <CircularProgress />
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              Loading forecast data...
-            </Typography>
-          </Box>
-        ) : (
-          <List>
-            {forecasts.map((f, index) => (
-              <React.Fragment key={index}>
-                <ListItem>
-                  <ListItemText
-                    primary={`Time: ${new Date(f.timestamp).toLocaleString()}`}
-                    secondary={`Power Output: ${f.powerOutput} MW`}
-                  />
-                </ListItem>
-                <Divider />
-              </React.Fragment>
-            ))}
-          </List>
-        )}
-      </Paper>
+    <Container maxWidth="sm">
+      <Box mt={5} display="flex" flexDirection="column" gap={4}>
+        <WindFarmGeneralnfo windFarm={windFarm} />
+        <WindFarmTurbines fleets={windFarm.wind_turbine_fleet} />
+        <WindFarmForecasts
+          forecasts={windFarm.forecasts}
+          windFarmId={windFarm.id}
+          windFarmName={windFarm.name}
+        />
+      </Box>
     </Container>
   );
 };
