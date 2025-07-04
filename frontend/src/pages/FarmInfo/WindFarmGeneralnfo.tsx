@@ -7,11 +7,15 @@ import {
   IconButton,
   Divider,
   TextField,
+  Box,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import type { WindFarmDb } from "../../shared/api/api";
 import { useCRUDForWindFarm } from "../../entities/WindFarm/useCRUDForWindFarm";
 import EditDialog from "../../shared/widgets/EditDialog/EditDialog";
+import { useNavigate } from "react-router-dom";
+import { appRoutes } from "../../app/appRoutes";
 
 type Props = {
   windFarm: WindFarmDb;
@@ -24,8 +28,17 @@ export const WindFarmGeneralnfo: React.FC<Props> = ({ windFarm }) => {
   const [description, setDescription] = useState(windFarm.description);
   const [latitude, setLatitude] = useState(windFarm.location.latitude);
   const [longitude, setLongitude] = useState(windFarm.location.longitude);
+  const navigate = useNavigate();
 
-  const { editWindFarm, isLoading } = useCRUDForWindFarm();
+  const { editWindFarm, deleteWindFarm, isLoading } = useCRUDForWindFarm();
+
+  const handleDelete = async () => {
+    const res = await deleteWindFarm(windFarm.id);
+
+    if (res) {
+      navigate(appRoutes.projects);
+    }
+  };
 
   const handleSave = async () => {
     await editWindFarm(windFarm.id, {
@@ -45,9 +58,14 @@ export const WindFarmGeneralnfo: React.FC<Props> = ({ windFarm }) => {
         <CardContent>
           <Grid container justifyContent="space-between" alignItems="center">
             <Typography variant="h6">Main Information</Typography>
-            <IconButton onClick={() => setOpen(true)}>
-              <EditIcon />
-            </IconButton>
+            <Box>
+              <IconButton onClick={() => setOpen(true)}>
+                <EditIcon />
+              </IconButton>
+              <IconButton onClick={handleDelete}>
+                <DeleteIcon />
+              </IconButton>
+            </Box>
           </Grid>
           <Divider sx={{ my: 2 }} />
           <Typography>

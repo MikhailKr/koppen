@@ -12,10 +12,11 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import type { WindTurbineFleetDb } from "../../shared/api/api";
 import EditDialog from "../../shared/widgets/EditDialog/EditDialog";
-// import { WindTurbineFleetDb } from "../types";
-// import { useEditEntity } from "../hooks/useEditEntity";
+import { WindTurbineSelect } from "../../shared/widgets/WindTurbineSelect/WindTurbineSelect";
+import { useCRUDForTurbine } from "../../entities/WindFarm/useCRUDForTurbine";
 
 type Props = {
   fleets: WindTurbineFleetDb[];
@@ -32,8 +33,10 @@ const WindFarmTurbines: React.FC<Props> = ({ fleets }) => {
   const [currentFleet, setCurrentFleet] = useState<WindTurbineFleetDb | null>(
     null,
   );
+
+  const { saveTurbine, deleteTurbine, isLoading } = useCRUDForTurbine();
+
   const isEdit = currentFleet !== null;
-  // const { edit, isLoading } = useEditEntity<WindTurbineFleetDb>("WindTurbineFleet");
 
   const openEdit = (fleet: WindTurbineFleetDb) => {
     setCurrentFleet(fleet);
@@ -45,10 +48,14 @@ const WindFarmTurbines: React.FC<Props> = ({ fleets }) => {
     setOpen(true);
   };
 
-  const handleSave = () => {
-    // const data = currentFleet ?? emptyFleet;
-    // edit(data);
+  const handleSave = async () => {
+    const data = currentFleet ?? emptyFleet;
+    await saveTurbine(data);
     setOpen(false);
+  };
+
+  const handleDelete = async (turbineFleetId: number) => {
+    await deleteTurbine(turbineFleetId);
   };
 
   return (
@@ -84,6 +91,9 @@ const WindFarmTurbines: React.FC<Props> = ({ fleets }) => {
               <IconButton onClick={() => openEdit(fleet)}>
                 <EditIcon />
               </IconButton>
+              <IconButton onClick={() => handleDelete(fleet.id)}>
+                <DeleteIcon />
+              </IconButton>
             </Grid>
           ))}
         </CardContent>
@@ -93,10 +103,19 @@ const WindFarmTurbines: React.FC<Props> = ({ fleets }) => {
         open={open}
         onClose={() => setOpen(false)}
         onSubmit={handleSave}
-        isLoading={false}
+        isLoading={isLoading}
         title={isEdit ? "Edit Turbine Fleet" : "Add Turbine Fleet"}
         submitLabel={isEdit ? "Save" : "Add"}
       >
+        <WindTurbineSelect
+          onChange={(turbine) =>
+            setCurrentFleet((prev) => ({
+              ...(prev ?? emptyFleet),
+              wind_turbine: turbine,
+            }))
+          }
+          value={currentFleet?.wind_turbine?.id ?? -1}
+        />
         <TextField
           label="Number of Turbines"
           type="number"

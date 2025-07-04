@@ -20,7 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import type { WindFarmFormData } from "../../entities/WindFarm/WindFarm";
 import Grid from "@mui/material/Grid";
-import { useReferences } from "../../shared/contexts/ReferencesContext";
+import { WindTurbineSelect } from "../../shared/widgets/WindTurbineSelect/WindTurbineSelect";
 
 interface Props {
   windFarm: WindFarmFormData;
@@ -38,8 +38,6 @@ const TIME_RESOLUTIONS = [
 
 const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
   const [activeStep, setActiveStep] = useState(0);
-
-  const { turbines: turbinesModels } = useReferences();
 
   const { control, handleSubmit, trigger } = useForm<WindFarmFormData>({
     defaultValues: windFarm,
@@ -162,29 +160,12 @@ const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
                     control={control}
                     rules={{ required: "Model is required" }}
                     render={({ field, fieldState }) => (
-                      <FormControl fullWidth error={!!fieldState.error}>
-                        <InputLabel id={`model-label-${index}`}>
-                          Model
-                        </InputLabel>
-                        <Select
-                          labelId={`model-label-${index}`}
-                          {...field}
-                          value={field.value || ""}
-                          label="Model"
-                          onChange={(e) => {
-                            field.onChange(e.target.value);
-                          }}
-                        >
-                          <MenuItem value="">
-                            <em>Select model</em>
-                          </MenuItem>
-                          {turbinesModels?.map((model) => (
-                            <MenuItem key={model.id} value={model.id}>
-                              {model.turbine_type}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
+                      <WindTurbineSelect
+                        isError={!!fieldState.error}
+                        onChange={(turbine) => field.onChange(turbine.id)}
+                        value={field.value}
+                        index={index}
+                      />
                     )}
                   />
                 </Grid>
