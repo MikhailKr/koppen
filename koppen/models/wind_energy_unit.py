@@ -15,12 +15,16 @@ class Location(Base):
 class WindFarm(Base):
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
-    wind_turbine_fleet = relationship("WindTurbineFleet", back_populates="wind_farm")
+    wind_turbine_fleet = relationship(
+        "WindTurbineFleet", back_populates="wind_farm", cascade="all, delete-orphan"
+    )
     location_id = Column(Integer, ForeignKey("location.id"), nullable=False)
     location = relationship("Location", back_populates="wind_farm")
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     user = relationship("User", back_populates="wind_farms")
-    forecasts = relationship("Forecast", back_populates="wind_farm")
+    forecasts = relationship(
+        "Forecast", back_populates="wind_farm", cascade="all, delete-orphan"
+    )
 
     def __str__(self):
         return (

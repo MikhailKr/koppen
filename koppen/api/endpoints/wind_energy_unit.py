@@ -11,6 +11,8 @@ from sqlalchemy.orm import joinedload, selectinload
 from fastapi import status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.auth import get_current_user
+from models.user import User
 from models.forecast import Forecast
 from models.wind_energy_unit import (
     Location,
@@ -37,8 +39,7 @@ from schemas.wind_energy_unit import (
     WindTurbineUpdate,
 )
 
-# router = APIRouter(dependencies=[Depends(get_current_user)])
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 @router.get(
@@ -77,51 +78,53 @@ async def create_location(
 async def create_wind_farm(
     wind_farm: WindFarmCreate,
     session: AsyncSession = Depends(get_async_session),
+    current_user: User = Depends(get_current_user),
 ):
     try:
-        async with session.begin():
-            # 1. Create Location
-            new_location = Location(
-                longitude=wind_farm.location.longitude,
-                latitude=wind_farm.location.latitude,
+        # async with session.begin():
+        # 1. Create Location
+        new_location = Location(
+            longitude=wind_farm.location.longitude,
+            latitude=wind_farm.location.latitude,
+        )
+        session.add(new_location)
+        await session.flush()
+
+        # 2. Create WindFarm
+        new_wind_farm = WindFarm(
+            name=wind_farm.name,
+            description=wind_farm.description,
+            location_id=new_location.id,
+            user_id=current_user.id,
+        )
+        session.add(new_wind_farm)
+        await session.flush()
+
+        # 3. Create Forecasts (as a list)
+        for forecast_data in wind_farm.forecasts:
+            new_forecast = Forecast(
+                time_resolution=forecast_data.time_resolution,
+                repeat_daily=forecast_data.repeat_daily,
+                daily_time=forecast_data.daily_time,
+                repeat_hourly=forecast_data.repeat_hourly,
+                hourly_minute=forecast_data.hourly_minute,
+                wind_farm_id=new_wind_farm.id,
             )
-            session.add(new_location)
-            await session.flush()
+            session.add(new_forecast)
 
-            # 2. Create WindFarm
-            new_wind_farm = WindFarm(
-                name=wind_farm.name,
-                description=wind_farm.description,
-                location_id=new_location.id,
-                user_id=wind_farm.user_id,
+        # 4. Create WindTurbineFleets
+        for fleet in wind_farm.wind_turbine_fleet:
+            new_fleet = WindTurbineFleet(
+                number_of_turbines=fleet.number_of_turbines,
+                wind_turbine_id=fleet.wind_turbine_id,
+                wind_farm_id=new_wind_farm.id,
             )
-            session.add(new_wind_farm)
-            await session.flush()
+            session.add(new_fleet)
 
-            # 3. Create Forecasts (as a list)
-            for forecast_data in wind_farm.forecasts:
-                new_forecast = Forecast(
-                    time_resolution=forecast_data.time_resolution,
-                    repeat_daily=forecast_data.repeat_daily,
-                    daily_time=forecast_data.daily_time,
-                    repeat_hourly=forecast_data.repeat_hourly,
-                    hourly_minute=forecast_data.hourly_minute,
-                    wind_farm_id=new_wind_farm.id,
-                )
-                session.add(new_forecast)
+        # await session.flush()
+        await session.commit()
 
-            # 4. Create WindTurbineFleets
-            for fleet in wind_farm.wind_turbine_fleet:
-                new_fleet = WindTurbineFleet(
-                    number_of_turbines=fleet.number_of_turbines,
-                    wind_turbine_id=fleet.wind_turbine_id,
-                    wind_farm_id=new_wind_farm.id,
-                )
-                session.add(new_fleet)
-
-            await session.flush()
-
-            return Response(status_code=status.HTTP_201_CREATED)
+        return Response(status_code=status.HTTP_201_CREATED)
     except IntegrityError:
         await session.rollback()
         raise

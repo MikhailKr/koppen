@@ -36,7 +36,6 @@ class WindFarmForecastCreate(BaseModel):
     daily_time: time | None = None
     repeat_hourly: bool = False
     hourly_minute: int | None = None
-    wind_farm_id: int
 
     class Config:
         orm_mode = True
@@ -51,7 +50,7 @@ class WindFarmCreate(BaseModel):
     name: str
     description: str
     location: LocationCreate
-    user_id: int
+    # user_id: int
     forecasts: list[WindFarmForecastCreate]
     wind_turbine_fleet: list[WindTurbineFleetCreate]
 
