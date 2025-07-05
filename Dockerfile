@@ -13,8 +13,7 @@ COPY pyproject.toml ./
 RUN uv pip install --system -e .
 
 # Copy the rest of the application code
-COPY . .
-
+COPY koppen/ .
 EXPOSE 8000
 
-CMD ["uvicorn", "koppen.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
