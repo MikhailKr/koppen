@@ -11,7 +11,6 @@ services:
       - ENVIRONMENT=production
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_USER=${SMTP_USER}
-      - TEST=${TEST}
     # depends_on:
     #   - db
   redis:

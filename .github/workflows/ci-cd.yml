@@ -101,6 +101,8 @@ jobs:
         env:
           SSH_HOST: ${{ secrets.VM_HOST }}
           SSH_USER: ${{ secrets.VM_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}  
         run: |
           # Setup SSH key
           mkdir -p ~/.ssh
