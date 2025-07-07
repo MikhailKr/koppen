@@ -5,6 +5,7 @@ import { useWindFarmInfo } from "../../entities/WindFarm/useWindFarmInfo";
 import WindFarmTurbines from "./WindFarmTurbines";
 import WindFarmForecasts from "./WindFarmForecasts";
 import { WindFarmGeneralnfo } from "./WindFarmGeneralnfo";
+import { PageContainerStyled } from "./WindFarmInfoPage.styles";
 
 export const WindFarmInfoPage: React.FC = () => {
   const { id: windFarmId } = useParams();
@@ -14,7 +15,7 @@ export const WindFarmInfoPage: React.FC = () => {
     return (
       <Container sx={{ textAlign: "center", mt: 10 }}>
         <CircularProgress />
-        <Typography variant="h6" sx={{ mt: 2 }}>
+        <Typography variant="h6" sx={{ mt: 2, color: "white" }}>
           Loading wind farm data...
         </Typography>
       </Container>
@@ -23,14 +24,14 @@ export const WindFarmInfoPage: React.FC = () => {
 
   if (!windFarm || isError)
     return (
-      <Typography variant="h6" sx={{ mt: 2 }}>
+      <Typography variant="h6" sx={{ mt: 2, color: "white" }}>
         Some error happend :(
       </Typography>
     );
 
   return (
-    <Container maxWidth="sm">
-      <Box mt={5} display="flex" flexDirection="column" gap={4}>
+    <PageContainerStyled>
+      <Box display="flex" flexDirection="column" gap={2}>
         <WindFarmGeneralnfo windFarm={windFarm} />
         <WindFarmTurbines fleets={windFarm.wind_turbine_fleet} />
         <WindFarmForecasts
@@ -39,6 +40,6 @@ export const WindFarmInfoPage: React.FC = () => {
           windFarmName={windFarm.name}
         />
       </Box>
-    </Container>
+    </PageContainerStyled>
   );
 };

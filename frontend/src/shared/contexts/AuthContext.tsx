@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { useLoginAuthTokenPostMutation } from "../api/api";
 
 interface AuthContextType {
@@ -17,20 +17,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<string | null>(
+    localStorage.getItem(USER_NAME_KEY),
+  );
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem(ACCESS_TOKEN_KEY),
+  );
 
   const [loginMutation] = useLoginAuthTokenPostMutation();
-
-  // При загрузке компонента читаем из localStorage
-  useEffect(() => {
-    const storedUser = localStorage.getItem(USER_NAME_KEY);
-    const storedToken = localStorage.getItem(ACCESS_TOKEN_KEY);
-    if (storedUser && storedToken) {
-      setUser(storedUser);
-      setToken(storedToken);
-    }
-  }, []);
 
   const login = async (username: string, password: string) => {
     const result = await loginMutation({

@@ -1,16 +1,17 @@
 import React from "react";
-import { Typography, Box } from "@mui/material";
+import { Typography } from "@mui/material";
 import { WindFarmTable } from "../../shared/widgets/WindFarmTable/WindFarmTable";
+import { PageContainerStyled } from "./MainPage.styles";
 
 const MainPage: React.FC = () => {
   return (
-    <Box sx={{ p: 4 }}>
+    <PageContainerStyled>
       <Typography variant="h4" gutterBottom>
-        All available farms
+        My wind farms
       </Typography>
 
       <WindFarmTable />
-    </Box>
+    </PageContainerStyled>
   );
 };
 

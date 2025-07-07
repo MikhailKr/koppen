@@ -5,6 +5,8 @@ import {
   type PowerCurveDb,
   type WindTurbineDb,
 } from "../api/api";
+import { useLocation } from "react-router-dom";
+import { appRoutes } from "../../app/appRoutes";
 
 type ReferencesContextType = {
   turbines: WindTurbineDb[] | undefined;
@@ -18,11 +20,18 @@ const ReferencesContext = createContext<ReferencesContextType | undefined>(
 export const ReferencesProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const location = useLocation();
+  const isLoginPage = location.pathname === appRoutes.login;
+
   const { data: turbines } =
-    useGetWindTurbinesWindEnergyUnitsWindTurbinesGetQuery();
+    useGetWindTurbinesWindEnergyUnitsWindTurbinesGetQuery(undefined, {
+      skip: isLoginPage,
+    });
 
   const { data: powerCurves } =
-    useGetPowerCurvesWindEnergyUnitsPowerCurvesGetQuery();
+    useGetPowerCurvesWindEnergyUnitsPowerCurvesGetQuery(undefined, {
+      skip: isLoginPage,
+    });
 
   const contextValue = {
     turbines,
