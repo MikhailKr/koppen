@@ -1,17 +1,19 @@
 # Crud for wind turbine
 
 # TODO: finish wind_energy_unit_block. Make it work and make it looks fine and deploy it to gitlab
+from sqlalchemy.exc import IntegrityError
 
-from fastapi import APIRouter, Path
-from pydantic import BaseModel
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Path, Response
+from fastapi import Depends, HTTPException
 from sqlalchemy import select
 from core.db import get_async_session
 from sqlalchemy.orm import joinedload, selectinload
-from sqlalchemy import exc
 from fastapi import status
 from sqlalchemy.ext.asyncio import AsyncSession
-from core.config import settings
+
+from core.auth import get_current_user
+from models.user import User
+from models.forecast import Forecast
 from models.wind_energy_unit import (
     Location,
     PowerCurve,
@@ -27,6 +29,7 @@ from schemas.wind_energy_unit import (
     PowerCurveUpdate,
     WindFarmCreate,
     WindFarmDB,
+    WindFarmForecastCreate,
     WindFarmUpdate,
     WindTurbineCreate,
     WindTurbineDB,
@@ -36,7 +39,7 @@ from schemas.wind_energy_unit import (
     WindTurbineUpdate,
 )
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 @router.get(
@@ -67,43 +70,104 @@ async def create_location(
 
 
 @router.post(
-    "/wind_farms", response_model=WindFarmDB, status_code=status.HTTP_201_CREATED
+    "/wind_farms",
+    response_model=WindFarmDB,
+    status_code=status.HTTP_201_CREATED,
+    description="Create a new wind farm,location, wind_turbine_fleets, and forecast",
 )
 async def create_wind_farm(
     wind_farm: WindFarmCreate,
     session: AsyncSession = Depends(get_async_session),
+    current_user: User = Depends(get_current_user),
 ):
-    stmt = select(Location).where(
-        Location.latitude == wind_farm.location.latitude,
-        Location.longitude == wind_farm.location.longitude,
-    )
-    result = await session.execute(stmt)
-    location = result.scalars().first()
-
-    if not location:
-        location = Location(
-            latitude=wind_farm.location.latitude, longitude=wind_farm.location.longitude
+    try:
+        # async with session.begin():
+        # 1. Create Location
+        new_location = Location(
+            longitude=wind_farm.location.longitude,
+            latitude=wind_farm.location.latitude,
         )
-        session.add(location)
-        await session.commit()
-        await session.refresh(location)
+        session.add(new_location)
+        await session.flush()
 
-    wind_farm_obj = WindFarm(
-        name=wind_farm.name,
-        description=wind_farm.description,
-        location_id=location.id,
-    )
-    session.add(wind_farm_obj)
-    await session.commit()
-    await session.refresh(wind_farm_obj)
-    stmt = (
-        select(WindFarm)
-        .options(selectinload(WindFarm.location))
-        .where(WindFarm.id == wind_farm_obj.id)
-    )
-    result = await session.execute(stmt)
-    wind_farm_obj = result.scalars().first()
-    return wind_farm_obj
+        # 2. Create WindFarm
+        new_wind_farm = WindFarm(
+            name=wind_farm.name,
+            description=wind_farm.description,
+            location_id=new_location.id,
+            user_id=current_user.id,
+        )
+        session.add(new_wind_farm)
+        await session.flush()
+
+        # 3. Create Forecasts (as a list)
+        for forecast_data in wind_farm.forecasts:
+            new_forecast = Forecast(
+                time_resolution=forecast_data.time_resolution,
+                repeat_daily=forecast_data.repeat_daily,
+                daily_time=forecast_data.daily_time,
+                repeat_hourly=forecast_data.repeat_hourly,
+                hourly_minute=forecast_data.hourly_minute,
+                wind_farm_id=new_wind_farm.id,
+            )
+            session.add(new_forecast)
+
+        # 4. Create WindTurbineFleets
+        for fleet in wind_farm.wind_turbine_fleet:
+            new_fleet = WindTurbineFleet(
+                number_of_turbines=fleet.number_of_turbines,
+                wind_turbine_id=fleet.wind_turbine_id,
+                wind_farm_id=new_wind_farm.id,
+            )
+            session.add(new_fleet)
+
+        # await session.flush()
+        await session.commit()
+
+        return Response(status_code=status.HTTP_201_CREATED)
+    except IntegrityError:
+        await session.rollback()
+        raise
+
+
+# @router.post(
+#     "/wind_farms", response_model=WindFarmDB, status_code=status.HTTP_201_CREATED
+# )
+# async def create_wind_farm(
+#     wind_farm: WindFarmCreate,
+#     session: AsyncSession = Depends(get_async_session),
+# ):
+#     stmt = select(Location).where(
+#         Location.latitude == wind_farm.location.latitude,
+#         Location.longitude == wind_farm.location.longitude,
+#     )
+#     result = await session.execute(stmt)
+#     location = result.scalars().first()
+
+#     if not location:
+#         location = Location(
+#             latitude=wind_farm.location.latitude, longitude=wind_farm.location.longitude
+#         )
+#         session.add(location)
+#         await session.commit()
+#         await session.refresh(location)
+
+#     wind_farm_obj = WindFarm(
+#         name=wind_farm.name,
+#         description=wind_farm.description,
+#         location_id=location.id,
+#     )
+#     session.add(wind_farm_obj)
+#     await session.commit()
+#     await session.refresh(wind_farm_obj)
+#     stmt = (
+#         select(WindFarm)
+#         .options(selectinload(WindFarm.location))
+#         .where(WindFarm.id == wind_farm_obj.id)
+#     )
+#     result = await session.execute(stmt)
+#     wind_farm_obj = result.scalars().first()
+#     return wind_farm_obj
 
 
 @router.patch("/wind_farms/{wind_farm_id}", response_model=WindFarmDB)
@@ -147,6 +211,68 @@ async def update_wind_farm(
     result = await session.execute(stmt)
     wind_farm_obj = result.scalars().first()
     return wind_farm_obj
+
+
+@router.get("/wind_farms/{wind_farm_id}", response_model=WindFarmDB)
+async def get_wind_farm(
+    wind_farm_id: int,
+    session: AsyncSession = Depends(get_async_session),
+):
+    stmt = (
+        select(WindFarm)
+        .where(WindFarm.id == wind_farm_id)
+        .options(
+            selectinload(WindFarm.location),
+            selectinload(WindFarm.forecasts),
+            selectinload(WindFarm.wind_turbine_fleet).options(
+                selectinload(WindTurbineFleet.wind_turbine).selectinload(
+                    WindTurbine.power_curve
+                )
+            ),
+        )
+    )
+    result = await session.execute(stmt)
+    wind_farm_obj = result.scalars().first()
+    if not wind_farm_obj:
+        raise HTTPException(status_code=404, detail="Wind farm not found")
+    return wind_farm_obj
+
+
+@router.post("/wind_farms/{wind_farm_id}/forecasts")
+async def create_forecast(
+    wind_farm_id: int,
+    wind_farm_forecast: WindFarmForecastCreate,
+    session: AsyncSession = Depends(get_async_session),
+):
+    """
+    Placeholder for creating a forecast for a wind farm.
+    This function should be implemented to handle the creation of forecasts.
+    """
+    stmt = select(WindFarm).where(WindFarm.id == wind_farm_id)
+    result = await session.execute(stmt)
+    wind_farm_obj = result.scalars().first()
+
+    if not wind_farm_obj:
+        raise HTTPException(status_code=404, detail="Wind farm not found")
+
+    # Here you would implement the logic to create a forecast
+    # For now, we just return a placeholder response
+    return {
+        "message": "Forecast creation is not yet implemented",
+        "wind_farm_id": wind_farm_id,
+        "forecast_data": wind_farm_forecast.model_dump(),
+    }
+
+
+@router.get("/wind_farms/{wind_farm_id}/forecasts")
+async def get_wind_farm_forecasts(
+    wind_farm_id: int,
+    session: AsyncSession = Depends(get_async_session),
+):
+    stmt = select(Forecast).where(Forecast.wind_farm_id == wind_farm_id)
+    result = await session.execute(stmt)
+    wind_farm_forecast_obj = result.scalars().all()
+    return wind_farm_forecast_obj
 
 
 @router.delete("/wind_farms/{wind_farm_id}", status_code=status.HTTP_204_NO_CONTENT)

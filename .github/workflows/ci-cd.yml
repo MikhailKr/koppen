@@ -60,9 +60,9 @@ jobs:
   build-and-push:
     needs: test-and-lint
     runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    # if: |
+    #   github.event_name == 'workflow_dispatch' ||
+    #   (github.event_name == 'push' && github.ref == 'refs/heads/main')
     environment: ${{ github.event.inputs.environment || 'development' }}
 
     steps:
@@ -101,6 +101,7 @@ jobs:
         env:
           SSH_HOST: ${{ secrets.VM_HOST }}
           SSH_USER: ${{ secrets.VM_USERNAME }}
+
         run: |
           # Setup SSH key
           mkdir -p ~/.ssh
@@ -127,12 +128,14 @@ jobs:
             # Deploy using docker-compose
             export YC_REGISTRY_ID=${{ secrets.YC_REGISTRY_ID }}
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            export SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
+            export SMTP_USER=${{ secrets.SMTP_USER }}
 
             # Stop the current containers
-            docker compose -f docker-compose.prod.yml down
+            docker-compose -f docker-compose.prod.yml down
 
             # Start with the new image
-            docker compose -f docker-compose.prod.yml up -d
+            docker-compose -f docker-compose.prod.yml up -d
 
             # Clean up old images
             docker image prune -f

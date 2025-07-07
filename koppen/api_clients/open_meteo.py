@@ -6,7 +6,6 @@ from tenacity import (
     wait_exponential,
     retry_if_exception_type,
 )
-import asyncio
 
 
 class OpenMeteoAsyncClient:
