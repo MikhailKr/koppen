@@ -20,6 +20,7 @@ import { useCRUDForTurbine } from "../../entities/WindFarm/useCRUDForTurbine";
 
 type Props = {
   fleets: WindTurbineFleetDb[];
+  onUpdate: () => Promise<void>;
 };
 
 const emptyFleet: WindTurbineFleetDb = {
@@ -28,7 +29,7 @@ const emptyFleet: WindTurbineFleetDb = {
   wind_turbine: null,
 };
 
-const WindFarmTurbines: React.FC<Props> = ({ fleets }) => {
+const WindFarmTurbines: React.FC<Props> = ({ fleets, onUpdate }) => {
   const [open, setOpen] = useState(false);
   const [currentFleet, setCurrentFleet] = useState<WindTurbineFleetDb | null>(
     null,
@@ -51,6 +52,7 @@ const WindFarmTurbines: React.FC<Props> = ({ fleets }) => {
   const handleSave = async () => {
     const data = currentFleet ?? emptyFleet;
     await saveTurbine(data);
+    await onUpdate();
     setOpen(false);
   };
 
@@ -88,12 +90,14 @@ const WindFarmTurbines: React.FC<Props> = ({ fleets }) => {
                   Type: {fleet.wind_turbine?.turbine_type ?? "-"}
                 </Typography>
               </Box>
-              <IconButton onClick={() => openEdit(fleet)}>
-                <EditIcon />
-              </IconButton>
-              <IconButton onClick={() => handleDelete(fleet.id)}>
-                <DeleteIcon />
-              </IconButton>
+              <Box>
+                <IconButton onClick={() => openEdit(fleet)}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton onClick={() => handleDelete(fleet.id)}>
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
             </Grid>
           ))}
         </CardContent>

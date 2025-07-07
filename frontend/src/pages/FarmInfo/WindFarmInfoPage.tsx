@@ -9,7 +9,9 @@ import { PageContainerStyled } from "./WindFarmInfoPage.styles";
 
 export const WindFarmInfoPage: React.FC = () => {
   const { id: windFarmId } = useParams();
-  const { windFarm, isLoading, isError } = useWindFarmInfo(Number(windFarmId));
+  const { windFarm, isLoading, isError, updateFarmInfo } = useWindFarmInfo(
+    Number(windFarmId),
+  );
 
   if (isLoading) {
     return (
@@ -32,12 +34,16 @@ export const WindFarmInfoPage: React.FC = () => {
   return (
     <PageContainerStyled>
       <Box display="flex" flexDirection="column" gap={2}>
-        <WindFarmGeneralnfo windFarm={windFarm} />
-        <WindFarmTurbines fleets={windFarm.wind_turbine_fleet} />
+        <WindFarmGeneralnfo windFarm={windFarm} onUpdate={updateFarmInfo} />
+        <WindFarmTurbines
+          fleets={windFarm.wind_turbine_fleet}
+          onUpdate={updateFarmInfo}
+        />
         <WindFarmForecasts
           forecasts={windFarm.forecasts}
           windFarmId={windFarm.id}
           windFarmName={windFarm.name}
+          onUpdate={updateFarmInfo}
         />
       </Box>
     </PageContainerStyled>
