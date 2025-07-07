@@ -19,6 +19,9 @@ dependencies = [
     "python-jose[cryptography]>=3.3.0",
     "passlib[bcrypt]>=1.7.4",
     "bcrypt>=4.3.0",
+    "celery>=5.5.3",
+    "redis>=6.2.0",
+    "aiosmtplib>=4.0.1",
 ]
 
 [tool.ruff]
