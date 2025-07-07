@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { appRoutes } from "../../app/appRoutes";
 import { ACCESS_TOKEN_KEY } from "../contexts/AuthContext";
 
-const baseUrl = "http://158.160.91.255"; //'http://127.0.0.1:8000';
+const baseUrl = import.meta.env.DEV ? "http://158.160.91.255" : "/";
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl,

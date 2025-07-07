@@ -13,7 +13,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { appRoutes } from "../../../app/appRoutes";
 import { useAuth } from "../../contexts/AuthContext";
 import type { FC } from "react";
-import logo from "../../koppen_logo_color.png";
+// import logo from "../../koppen_logo_color.png";
 
 const Header: FC = () => {
   const location = useLocation();
@@ -29,11 +29,7 @@ const Header: FC = () => {
     return null;
   }
 
-  const currentTab = [
-    appRoutes.projects,
-    appRoutes.forecasts,
-    appRoutes.analytics,
-  ].includes(location.pathname)
+  const currentTab = [appRoutes.projects].includes(location.pathname)
     ? location.pathname
     : false;
 
@@ -42,17 +38,18 @@ const Header: FC = () => {
       position="static"
       color="transparent"
       elevation={0}
-      sx={{ borderBottom: "1px solid #EEEEEE", px: 4, py: 1.5 }}
+      sx={{ px: 4, py: 1.5 }}
     >
       <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
         <Box display="flex" alignItems="center" gap={1.5} flexDirection="row">
-          <img src={logo} width={300} />
+          {/* <img src={logo} width={300} /> */}
         </Box>
 
         <Box display="flex" alignItems="center" gap={4}>
-          <Tabs value={currentTab} textColor="primary" indicatorColor="primary">
+          <Tabs value={currentTab}>
             <Tab
-              label="Projects"
+              sx={{ color: "white" }}
+              label="Farm list"
               value={appRoutes.projects}
               onClick={() => navigate(appRoutes.projects)}
             />
@@ -69,11 +66,11 @@ const Header: FC = () => {
           </Tabs>
 
           <Box display="flex" alignItems="center" gap={2}>
-            <Typography variant="body2" color="textPrimary">
+            <Typography variant="body2" color="white">
               {user}
             </Typography>
             <Avatar sx={{ width: 40, height: 40 }} src="..." />
-            <IconButton onClick={handleLogout} color="primary">
+            <IconButton onClick={handleLogout} sx={{ color: "white" }}>
               <LogoutIcon />
             </IconButton>
           </Box>

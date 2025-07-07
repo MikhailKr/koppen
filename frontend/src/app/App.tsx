@@ -7,15 +7,13 @@ import {
 } from "react-router-dom";
 import { LoginPage } from "../pages/Login/LoginPage";
 import MainPage from "../pages/Main/MainPage";
-import { useAuth } from "../shared/contexts/AuthContext";
-import PrivateRoute from "./PrivateRoute";
 import { appRoutes } from "./appRoutes";
 import Header from "../shared/widgets/Header/Header";
 import { AddWindFarmPage } from "../pages/AddWindFarm/AddWindFarmPage";
-import { AnalyticsPage } from "../pages/Analytics/AnalyticsPage";
-import { ForecastsPage } from "../pages/Forecasts/ForecastsPage";
 import { WindFarmInfoPage } from "../pages/FarmInfo/WindFarmInfoPage";
 import { AppProvider } from "../shared/contexts/AppProviderContext";
+import { Background } from "../shared/widgets/Background/Background";
+import { useAuth } from "../shared/contexts/AuthContext";
 
 const FallbackRedirect: React.FC = () => {
   const { user } = useAuth();
@@ -27,30 +25,23 @@ const App: React.FC = () => {
   return (
     <Router>
       <AppProvider>
-        <Header />
+        <Background>
+          <Header />
 
-        <Routes>
-          <Route path={appRoutes.login} element={<LoginPage />} />
+          <Routes>
+            <Route path={appRoutes.login} element={<LoginPage />} />
 
-          <Route
-            path={appRoutes.projects}
-            element={
-              <PrivateRoute>
-                <MainPage />
-              </PrivateRoute>
-            }
-          />
+            <Route path={appRoutes.projects} element={<MainPage />} />
 
-          <Route path={appRoutes.farmAdd} element={<AddWindFarmPage />} />
+            <Route path={appRoutes.farmAdd} element={<AddWindFarmPage />} />
 
-          <Route path={appRoutes.farmView} element={<WindFarmInfoPage />} />
+            <Route path={appRoutes.farmView} element={<WindFarmInfoPage />} />
 
-          <Route path={appRoutes.analytics} element={<AnalyticsPage />} />
+            <Route path={appRoutes.farmView} element={<WindFarmInfoPage />} />
 
-          <Route path={appRoutes.forecasts} element={<ForecastsPage />} />
-
-          <Route path="*" element={<FallbackRedirect />} />
-        </Routes>
+            <Route path="*" element={<FallbackRedirect />} />
+          </Routes>
+        </Background>
       </AppProvider>
     </Router>
   );
