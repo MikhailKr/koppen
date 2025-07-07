@@ -1,6 +1,6 @@
 export const appRoutes = {
   login: "/login",
-  projects: "/projects",
+  projects: "/farms",
   farmAdd: "/farm/add",
   farmView: "/farm/:id",
 };

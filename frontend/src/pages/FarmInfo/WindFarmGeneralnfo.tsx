@@ -10,18 +10,19 @@ import {
   Box,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import type { WindFarmDb } from "../../shared/api/api";
 import { useCRUDForWindFarm } from "../../entities/WindFarm/useCRUDForWindFarm";
 import EditDialog from "../../shared/widgets/EditDialog/EditDialog";
 import { useNavigate } from "react-router-dom";
 import { appRoutes } from "../../app/appRoutes";
+import { DeleteFarmButton } from "./DeleteFarmButton";
 
 type Props = {
   windFarm: WindFarmDb;
+  onUpdate: () => Promise<void>;
 };
 
-export const WindFarmGeneralnfo: React.FC<Props> = ({ windFarm }) => {
+export const WindFarmGeneralnfo: React.FC<Props> = ({ windFarm, onUpdate }) => {
   const [open, setOpen] = useState(false);
 
   const [name, setName] = useState(windFarm.name);
@@ -49,6 +50,7 @@ export const WindFarmGeneralnfo: React.FC<Props> = ({ windFarm }) => {
         longitude,
       },
     });
+    await onUpdate();
     setOpen(false);
   };
 
@@ -62,9 +64,7 @@ export const WindFarmGeneralnfo: React.FC<Props> = ({ windFarm }) => {
               <IconButton onClick={() => setOpen(true)}>
                 <EditIcon />
               </IconButton>
-              <IconButton onClick={handleDelete}>
-                <DeleteIcon />
-              </IconButton>
+              <DeleteFarmButton onDelete={handleDelete} />
             </Box>
           </Grid>
           <Divider sx={{ my: 2 }} />

@@ -23,6 +23,7 @@ import { useDownloadForecasts } from "../../entities/Forecasts/useDownloadForeca
 import { useCreateOrDeleteForecast } from "../../entities/WindFarm/useCreateOrDeleteForecast";
 
 type Props = {
+  onUpdate: () => Promise<void>;
   forecasts: ForecastDb[];
   windFarmId: number;
   windFarmName: string;
@@ -41,6 +42,7 @@ const WindFarmForecasts: React.FC<Props> = ({
   forecasts,
   windFarmId,
   windFarmName,
+  onUpdate,
 }) => {
   const [open, setOpen] = useState(false);
   const [currentForecast, setCurrentForecast] = useState<ForecastDb | null>(
@@ -62,6 +64,7 @@ const WindFarmForecasts: React.FC<Props> = ({
   const handleSave = async () => {
     if (currentForecast) {
       await createForecastRequest(currentForecast);
+      await onUpdate();
       setOpen(false);
     }
   };
