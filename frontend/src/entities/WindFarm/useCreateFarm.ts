@@ -14,19 +14,11 @@ const mapFormDataToWindFarmContract = (
     longitude: windFarmData.longitude,
     latitude: windFarmData.latitude,
   },
-  forecasts: [
-    {
-      ...windFarmData.forecast,
-      // ignore ?
-      wind_farm_id: 0,
-    },
-  ],
+  forecasts: [windFarmData.forecast],
   wind_turbine_fleet: windFarmData.turbines.map((x) => ({
     wind_turbine_id: x.modelId,
     number_of_turbines: x.number,
   })),
-  // ignore ?
-  user_id: 0,
 });
 
 type CreateError = {

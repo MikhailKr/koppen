@@ -1,7 +1,7 @@
 import type { FC, ReactNode } from "react";
 import { ReduxProvider } from "../store";
 import { AuthProvider } from "./AuthContext";
-import { combineProviders } from "../lib/combineComponents";
+import { combineProviders } from "../utils/combineComponents";
 import { ReferencesProvider } from "./ReferencesContext";
 
 interface AppProviderProps {

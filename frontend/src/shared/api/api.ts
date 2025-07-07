@@ -426,7 +426,6 @@ export type WindFarmForecastCreate = {
   daily_time?: string | null;
   repeat_hourly?: boolean;
   hourly_minute?: number | null;
-  wind_farm_id: number;
 };
 export type WindTurbineFleetCreate = {
   number_of_turbines: number;
@@ -436,7 +435,6 @@ export type WindFarmCreate = {
   name: string;
   description: string;
   location: LocationCreate;
-  user_id: number;
   forecasts: WindFarmForecastCreate[];
   wind_turbine_fleet: WindTurbineFleetCreate[];
 };
@@ -510,6 +508,5 @@ export const {
   useLoginAuthTokenPostMutation,
   useForecastForecastWindFarmIdGetQuery,
 } = injectedRtkApi;
-
 export const useLazyForecastForecastWindFarmIdGetQuery =
   injectedRtkApi.endpoints.forecastForecastWindFarmIdGet.useLazyQuery;
