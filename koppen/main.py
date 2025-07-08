@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 from sqladmin import Admin
 from core.config import settings
@@ -31,6 +33,8 @@ ADMIN_APP_VIEWS = [
     ForecastAdmin,
 ]
 app = FastAPI(title=settings.app_title)
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allows all origins (for development only!)
@@ -54,9 +58,28 @@ def create_admin(app: FastAPI) -> None:
         admin.add_view(view)
 
 
-create_admin(app)
+# create_admin(app)
+
+# app.include_router(main_router)
+
+# app.mount("", StaticFiles(directory="static", html=True), name="static")
 
 app.include_router(main_router)
+create_admin(app)
+app.mount("/static", StaticFiles(directory="static", html=False), name="static")
+
+
+# Serve index.html for frontend routes
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str, request: Request):
+    if full_path.startswith("api") or full_path.startswith("admin"):
+        raise HTTPException(status_code=404)
+
+    allowed_prefixes = ["", "login", "main", "add", "farm"]
+    if any(full_path == prefix or full_path.startswith(f"{prefix}/") for prefix in allowed_prefixes):
+        return FileResponse("static/index.html", media_type="text/html")
+
+    raise HTTPException(status_code=404)
 
 
 if __name__ == "__main__":

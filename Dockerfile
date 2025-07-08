@@ -1,7 +1,18 @@
+FROM node:20-alpine as frontend-builder
+
+WORKDIR /frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm install
+
+COPY frontend/ .
+
+RUN npm run build
+
 FROM python:3.12-slim
 
 WORKDIR /app
 
+COPY --from=frontend-builder /frontend/dist /app/static
 # Install pip and uv
 RUN pip install --upgrade pip \
     && pip install uv

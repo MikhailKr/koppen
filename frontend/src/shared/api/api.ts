@@ -5,14 +5,14 @@ const injectedRtkApi = api.injectEndpoints({
       GetWindFarmsWindEnergyUnitsWindFarmsGetApiResponse,
       GetWindFarmsWindEnergyUnitsWindFarmsGetApiArg
     >({
-      query: () => ({ url: `/wind-energy-units/wind_farms` }),
+      query: () => ({ url: `/api/wind-energy-units/wind_farms` }),
     }),
     createWindFarmWindEnergyUnitsWindFarmsPost: build.mutation<
       CreateWindFarmWindEnergyUnitsWindFarmsPostApiResponse,
       CreateWindFarmWindEnergyUnitsWindFarmsPostApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_farms`,
+        url: `/api/wind-energy-units/wind_farms`,
         method: "POST",
         body: queryArg.windFarmCreate,
       }),
@@ -22,7 +22,7 @@ const injectedRtkApi = api.injectEndpoints({
       CreateLocationWindEnergyUnitsLocationPostApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/location`,
+        url: `/api/wind-energy-units/location`,
         method: "POST",
         body: queryArg.locationCreate,
       }),
@@ -32,7 +32,7 @@ const injectedRtkApi = api.injectEndpoints({
       UpdateWindFarmWindEnergyUnitsWindFarmsWindFarmIdPatchApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
+        url: `/api/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
         method: "PATCH",
         body: queryArg.windFarmUpdate,
       }),
@@ -42,7 +42,7 @@ const injectedRtkApi = api.injectEndpoints({
       GetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
+        url: `/api/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
       }),
     }),
     deleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDelete: build.mutation<
@@ -50,7 +50,7 @@ const injectedRtkApi = api.injectEndpoints({
       DeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
+        url: `/api/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
         method: "DELETE",
       }),
     }),
@@ -60,7 +60,7 @@ const injectedRtkApi = api.injectEndpoints({
         CreateForecastWindEnergyUnitsWindFarmsWindFarmIdForecastsPostApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/wind_farms/${queryArg.windFarmId}/forecasts`,
+          url: `/api/wind-energy-units/wind_farms/${queryArg.windFarmId}/forecasts`,
           method: "POST",
           body: queryArg.windFarmForecastCreate,
         }),
@@ -71,21 +71,21 @@ const injectedRtkApi = api.injectEndpoints({
         GetWindFarmForecastsWindEnergyUnitsWindFarmsWindFarmIdForecastsGetApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/wind_farms/${queryArg.windFarmId}/forecasts`,
+          url: `/api/wind-energy-units/wind_farms/${queryArg.windFarmId}/forecasts`,
         }),
       }),
     getPowerCurvesWindEnergyUnitsPowerCurvesGet: build.query<
       GetPowerCurvesWindEnergyUnitsPowerCurvesGetApiResponse,
       GetPowerCurvesWindEnergyUnitsPowerCurvesGetApiArg
     >({
-      query: () => ({ url: `/wind-energy-units/power_curves` }),
+      query: () => ({ url: `/api/wind-energy-units/power_curves` }),
     }),
     createPowerCurveWindEnergyUnitsPowerCurvesPost: build.mutation<
       CreatePowerCurveWindEnergyUnitsPowerCurvesPostApiResponse,
       CreatePowerCurveWindEnergyUnitsPowerCurvesPostApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/power_curves`,
+        url: `/api/wind-energy-units/power_curves`,
         method: "POST",
         body: queryArg.powerCurveCreate,
       }),
@@ -95,7 +95,7 @@ const injectedRtkApi = api.injectEndpoints({
       GetPowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdGetApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/power_curves/${queryArg.powerCurveId}`,
+        url: `/api/wind-energy-units/power_curves/${queryArg.powerCurveId}`,
       }),
     }),
     updatePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdPatch: build.mutation<
@@ -103,7 +103,7 @@ const injectedRtkApi = api.injectEndpoints({
       UpdatePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdPatchApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/power_curves/${queryArg.powerCurveId}`,
+        url: `/api/wind-energy-units/power_curves/${queryArg.powerCurveId}`,
         method: "PATCH",
         body: queryArg.powerCurveUpdate,
       }),
@@ -114,7 +114,7 @@ const injectedRtkApi = api.injectEndpoints({
         DeletePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdDeleteApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/power_curves/${queryArg.powerCurveId}`,
+          url: `/api/wind-energy-units/power_curves/${queryArg.powerCurveId}`,
           method: "DELETE",
         }),
       }),
@@ -122,14 +122,14 @@ const injectedRtkApi = api.injectEndpoints({
       GetWindTurbinesWindEnergyUnitsWindTurbinesGetApiResponse,
       GetWindTurbinesWindEnergyUnitsWindTurbinesGetApiArg
     >({
-      query: () => ({ url: `/wind-energy-units/wind_turbines` }),
+      query: () => ({ url: `/api/wind-energy-units/wind_turbines` }),
     }),
     createWindTurbineWindEnergyUnitsWindTurbinesPost: build.mutation<
       CreateWindTurbineWindEnergyUnitsWindTurbinesPostApiResponse,
       CreateWindTurbineWindEnergyUnitsWindTurbinesPostApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_turbines`,
+        url: `/api/wind-energy-units/wind_turbines`,
         method: "POST",
         body: queryArg.windTurbineCreate,
       }),
@@ -139,7 +139,7 @@ const injectedRtkApi = api.injectEndpoints({
       GetWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdGetApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_turbines/${queryArg.windTurbineId}`,
+        url: `/api/wind-energy-units/wind_turbines/${queryArg.windTurbineId}`,
       }),
     }),
     updateWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdPatch:
@@ -148,7 +148,7 @@ const injectedRtkApi = api.injectEndpoints({
         UpdateWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdPatchApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/wind_turbines/${queryArg.windTurbineId}`,
+          url: `/api/wind-energy-units/wind_turbines/${queryArg.windTurbineId}`,
           method: "PATCH",
           body: queryArg.windTurbineUpdate,
         }),
@@ -159,7 +159,7 @@ const injectedRtkApi = api.injectEndpoints({
         DeleteWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdDeleteApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/wind_turbines/${queryArg.windTurbineId}`,
+          url: `/api/wind-energy-units/wind_turbines/${queryArg.windTurbineId}`,
           method: "DELETE",
         }),
       }),
@@ -167,14 +167,14 @@ const injectedRtkApi = api.injectEndpoints({
       GetWindFleetsWindEnergyUnitsWindTurbineFleetsGetApiResponse,
       GetWindFleetsWindEnergyUnitsWindTurbineFleetsGetApiArg
     >({
-      query: () => ({ url: `/wind-energy-units/wind_turbine_fleets` }),
+      query: () => ({ url: `/api/wind-energy-units/wind_turbine_fleets` }),
     }),
     createWindFleetWindEnergyUnitsWindTurbineFleetsPost: build.mutation<
       CreateWindFleetWindEnergyUnitsWindTurbineFleetsPostApiResponse,
       CreateWindFleetWindEnergyUnitsWindTurbineFleetsPostApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_turbine_fleets`,
+        url: `/api/wind-energy-units/wind_turbine_fleets`,
         method: "POST",
         body: queryArg.windTurbineFleetCreate,
       }),
@@ -184,7 +184,7 @@ const injectedRtkApi = api.injectEndpoints({
       GetWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdGetApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_turbine_fleets/${queryArg.windFleetId}`,
+        url: `/api/wind-energy-units/wind_turbine_fleets/${queryArg.windFleetId}`,
       }),
     }),
     updateWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdPatch:
@@ -193,7 +193,7 @@ const injectedRtkApi = api.injectEndpoints({
         UpdateWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/wind_turbine_fleets/${queryArg.windFleetId}`,
+          url: `/api/wind-energy-units/wind_turbine_fleets/${queryArg.windFleetId}`,
           method: "PATCH",
           body: queryArg.windTurbineFleetUpdate,
         }),
@@ -204,7 +204,7 @@ const injectedRtkApi = api.injectEndpoints({
         DeleteWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/wind_turbine_fleets/${queryArg.windFleetId}`,
+          url: `/api/wind-energy-units/wind_turbine_fleets/${queryArg.windFleetId}`,
           method: "DELETE",
         }),
       }),
@@ -219,7 +219,7 @@ const injectedRtkApi = api.injectEndpoints({
         body.set("password", queryArg.bodyLoginAuthTokenPost.password);
 
         return {
-          url: "/auth/token",
+          url: `/api/auth/token`,
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -232,7 +232,7 @@ const injectedRtkApi = api.injectEndpoints({
       ForecastForecastWindFarmIdGetApiResponse,
       ForecastForecastWindFarmIdGetApiArg
     >({
-      query: (queryArg) => ({ url: `/forecast/${queryArg.windFarmId}` }),
+      query: (queryArg) => ({ url: `/api/forecast/${queryArg.windFarmId}` }),
     }),
   }),
   overrideExisting: false,
