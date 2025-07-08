@@ -76,7 +76,10 @@ async def serve_spa(full_path: str, request: Request):
         raise HTTPException(status_code=404)
 
     allowed_prefixes = ["", "login", "main", "add", "farm"]
-    if any(full_path == prefix or full_path.startswith(f"{prefix}/") for prefix in allowed_prefixes):
+    if any(
+        full_path == prefix or full_path.startswith(f"{prefix}/")
+        for prefix in allowed_prefixes
+    ):
         return FileResponse("static/index.html", media_type="text/html")
 
     raise HTTPException(status_code=404)
