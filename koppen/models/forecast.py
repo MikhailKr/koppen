@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey, Enum, Time, Boolean
+from sqlalchemy import JSON, Column, Integer, ForeignKey, Enum, Time, Boolean
 from sqlalchemy.orm import relationship
 from core.db import Base
 import enum
@@ -20,3 +20,4 @@ class Forecast(Base):
     daily_time = Column(Time, nullable=True)
     repeat_hourly = Column(Boolean, default=False)
     hourly_minute = Column(Integer, nullable=True)
+    recipients = Column(JSON, nullable=False, server_default="[]")

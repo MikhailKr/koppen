@@ -47,8 +47,13 @@ router = APIRouter(dependencies=[Depends(get_current_user)])
 )
 async def get_wind_farms(
     session: AsyncSession = Depends(get_async_session),
+    current_user: User = Depends(get_current_user),
 ):
-    query = select(WindFarm).options(joinedload(WindFarm.location))
+    query = (
+        select(WindFarm)
+        .where(WindFarm.user_id == current_user.id)
+        .options(joinedload(WindFarm.location))
+    )
     result = await session.execute(query)
     wind_farms = result.scalars().all()
 
