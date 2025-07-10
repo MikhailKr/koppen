@@ -84,7 +84,6 @@ async def _send_scheduled_forecasts_async():
     """Send forecast emails for all scheduled forecasts to their recipients."""
     async with AsyncSessionLocal() as session:
         try:
-            await session.expire_all()
             # 0. Get all active scheduled forecasts
             now = datetime.utcnow()
             current_time = now.time()
