@@ -85,6 +85,7 @@ async def _send_scheduled_forecasts_async():
     session = AsyncSessionLocal()
 
     try:
+        await session.expire_all()
         # 0. Get all active scheduled forecasts
         now = datetime.utcnow()
         current_time = now.time()
