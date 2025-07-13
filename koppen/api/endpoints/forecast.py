@@ -1,12 +1,15 @@
-from fastapi import APIRouter, Depends
+from io import StringIO
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api_clients.open_meteo import OpenMeteoAsyncClient
 from core.db import get_async_session
 from core.auth import get_current_user
+from models.forecast import ForecastHistory
 from models.wind_energy_unit import WindFarm, WindTurbineFleet, WindTurbine
-from schemas.forecasts import WeatherResponse
+from schemas.forecasts import ForecastHistoryDB, WeatherResponse
 from sqlalchemy.orm import selectinload
 import pandas as pd
 import re
@@ -15,6 +18,52 @@ from windpowerlib import WindFarm as WindFarmWPL
 from windpowerlib import ModelChain, TurbineClusterModelChain
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
+
+
+@router.get("/history/{history_record_id}/download-csv")
+async def download_forecast_csv(
+    history_record_id: int,
+    session: AsyncSession = Depends(get_async_session),
+):
+    # Get the history record
+    result = await session.execute(
+        select(ForecastHistory).where(ForecastHistory.id == history_record_id)
+    )
+    history = result.scalars().first()
+
+    if not history:
+        raise HTTPException(status_code=404, detail="History record not found")
+
+    # Create a file-like object from the CSV text
+    csv_file = StringIO(history.csv_data)
+
+    # Return as a downloadable file
+    return StreamingResponse(
+        csv_file,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename=forecast_{history.id}_{history.generated_at.date()}.csv"
+        },
+    )
+
+
+@router.get("/history/{wind_farm_id}", response_model=list[ForecastHistoryDB])
+async def get_forecast_history(
+    wind_farm_id: int,
+    session: AsyncSession = Depends(get_async_session),
+):
+    """
+    Get the history of forecasts for a specific wind farm.
+    """
+    stmt = (
+        select(ForecastHistory)
+        .where(ForecastHistory.wind_farm_id == wind_farm_id)
+        .order_by(ForecastHistory.generated_at.desc())
+    )
+    result = await session.execute(stmt)
+    history_records = result.scalars().all()
+
+    return history_records
 
 
 @router.get("/{wind_farm_id}")

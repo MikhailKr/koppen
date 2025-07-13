@@ -108,11 +108,12 @@ async def create_wind_farm(
         # 3. Create Forecasts (as a list)
         for forecast_data in wind_farm.forecasts:
             new_forecast = Forecast(
-                time_resolution=forecast_data.time_resolution,
-                repeat_daily=forecast_data.repeat_daily,
-                daily_time=forecast_data.daily_time,
-                repeat_hourly=forecast_data.repeat_hourly,
-                hourly_minute=forecast_data.hourly_minute,
+                name=forecast_data.name,
+                granularity=forecast_data.granularity,
+                horizon=forecast_data.horizon,
+                recipients=forecast_data.recipients,
+                start_time=forecast_data.start_time,
+                forecast_frequency=forecast_data.forecast_frequency,
                 wind_farm_id=new_wind_farm.id,
             )
             session.add(new_forecast)

@@ -21,7 +21,7 @@ from admin.views.wind_energy_unit import (
 from core.db import AsyncSessionLocal
 from admin.views.user import UserAdmin
 from starlette.middleware.sessions import SessionMiddleware
-from admin.views.forecast import ForecastAdmin
+from admin.views.forecast import ForecastAdmin, ForecastHistoryAdmin
 
 ADMIN_APP_VIEWS = [
     WindTurbineAdmin,
@@ -31,6 +31,7 @@ ADMIN_APP_VIEWS = [
     LocationAdmin,
     UserAdmin,
     ForecastAdmin,
+    ForecastHistoryAdmin,
 ]
 app = FastAPI(title=settings.app_title)
 
@@ -57,12 +58,6 @@ def create_admin(app: FastAPI) -> None:
     for view in ADMIN_APP_VIEWS:
         admin.add_view(view)
 
-
-# create_admin(app)
-
-# app.include_router(main_router)
-
-# app.mount("", StaticFiles(directory="static", html=True), name="static")
 
 app.include_router(main_router)
 create_admin(app)

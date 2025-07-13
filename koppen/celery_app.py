@@ -6,13 +6,13 @@ from datetime import datetime, timedelta
 import asyncio
 from sqlalchemy.orm import selectinload
 
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, extract, or_
 
 from sqlalchemy import select
 import pandas as pd
 from core.db import AsyncSessionLocal
 from forecasting.service import WindFarmForecastService
-from models.forecast import Forecast
+from models.forecast import Forecast, ForecastFrequencyEnum, ForecastHistory
 from utils.email_utils import FROM_EMAIL, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USER
 import io
 from email.mime.application import MIMEApplication
@@ -84,30 +84,28 @@ async def _send_scheduled_forecasts_async():
     """Send forecast emails for all scheduled forecasts to their recipients."""
     async with AsyncSessionLocal() as session:
         try:
-            # 0. Get all active scheduled forecasts
+            # 0. Get all active scheduled forecasts with all needed relationships
             now = datetime.utcnow()
             current_time = now.time()
             current_minute = now.minute
-
-            # Create time objects for comparison
             one_minute_ago = (now - timedelta(minutes=1)).time()
 
-            # Query forecasts that should be sent now
+            # Query forecasts with all needed relationships loaded
             scheduled_forecasts = await session.execute(
                 select(Forecast)
-                .options(selectinload(Forecast.wind_farm))
+                .options(
+                    selectinload(Forecast.wind_farm),  # Ensure recipients are loaded
+                )
                 .where(
                     or_(
-                        # Daily forecasts where current time is within 1 minute of scheduled time
                         and_(
-                            Forecast.repeat_daily == True,  # noqa: E712
-                            Forecast.daily_time <= current_time,
-                            Forecast.daily_time > one_minute_ago,
+                            Forecast.enable == True,  # noqa: E712
+                            Forecast.start_time <= current_time,
+                            Forecast.start_time > one_minute_ago,
                         ),
-                        # Hourly forecasts where current minute matches
                         and_(
-                            Forecast.repeat_hourly == True,  # noqa: E712
-                            Forecast.hourly_minute == current_minute,
+                            Forecast.forecast_frequency == ForecastFrequencyEnum.hourly,  # noqa: E712
+                            extract("minute", Forecast.start_time) == current_minute,
                         ),
                     )
                 )
@@ -119,10 +117,10 @@ async def _send_scheduled_forecasts_async():
                 print("No scheduled forecasts to send at this time")
                 return
 
-            # 1. Process each forecast
+            # Process each forecast
             for forecast in forecasts:
                 try:
-                    # Skip if no recipients
+                    # Skip if no recipients (now we can access this directly)
                     if not forecast.recipients:
                         print(f"No recipients configured for forecast {forecast.id}")
                         continue
@@ -131,7 +129,7 @@ async def _send_scheduled_forecasts_async():
                         f"Processing forecast {forecast.id} for wind farm {forecast.wind_farm_id}"
                     )
 
-                    # 2. Get forecast data
+                    # Get forecast data
                     service = WindFarmForecastService(session)
                     forecast_data = await service.calculate_forecast(
                         forecast.wind_farm_id
@@ -143,14 +141,30 @@ async def _send_scheduled_forecasts_async():
                         )
                         continue
 
-                    # 3. Format email content
+                    # Format email content
                     email_subject = f"{forecast.wind_farm.name} Power Forecast Report"
                     email_body = format_forecast_email(forecast_data)
 
-                    # 4. Create CSV attachment
+                    # Create CSV attachment
                     csv_buffer = generate_series_csv(forecast_data["power_output"])
 
-                    # 5. Send to each recipient
+                    # Save CSV to database
+                    try:
+                        history_record = ForecastHistory(
+                            forecast_id=forecast.id,
+                            generated_at=datetime.utcnow(),
+                            csv_data=csv_buffer.getvalue(),
+                            wind_farm_id=forecast.wind_farm_id,
+                        )
+                        session.add(history_record)
+                        await session.flush()
+                        print(f"Saved forecast history for forecast {forecast.id}")
+                    except Exception as db_error:
+                        await session.rollback()
+                        print(f"Failed to save forecast history: {str(db_error)}")
+                        continue  # Skip this forecast if we can't save history
+
+                    # Send to each recipient
                     for recipient in forecast.recipients:
                         try:
                             message = MIMEMultipart()
@@ -181,20 +195,20 @@ async def _send_scheduled_forecasts_async():
 
                         except Exception as email_error:
                             print(f"Failed to send to {recipient}: {str(email_error)}")
-                            continue  # Continue with next recipient
+                            continue
 
                 except Exception as forecast_error:
                     print(
                         f"Error processing forecast {forecast.id}: {str(forecast_error)}"
                     )
-                    continue  # Continue with next forecast
+                    continue
+
+            await session.commit()
 
         except Exception as e:
             await session.rollback()
             print(f"Error in forecast processing: {str(e)}")
             raise
-        # finally:
-        #     await session.close()
 
 
 def generate_series_csv(power_series) -> io.StringIO:
