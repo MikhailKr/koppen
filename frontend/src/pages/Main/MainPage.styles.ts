@@ -6,7 +6,6 @@ export const PageContainerStyled = styled(Paper)`
   width: 100%;
   max-width: 600px;
   height: 70%;
-  text-align: center;
   border-radius: 10px !important;
   align-self: center;
   margin: auto;

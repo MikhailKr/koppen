@@ -1,7 +1,6 @@
 import { Paper } from "@mui/material";
 import styled from "styled-components";
 import background from "./background.jpg";
-import logo from "./logo.png";
 
 export const BackgroundContainerStyled = styled.div`
   z-index: -1;
@@ -24,14 +23,4 @@ export const StyledPaper = styled(Paper)`
   max-width: 400px;
   text-align: center;
   border-radius: 10px !important;
-`;
-
-export const Logo = styled.div`
-  position: absolute;
-  background-image: url(${logo});
-  background-size: 75px 50px;
-  height: 50px;
-  width: 75px;
-  top: 94px;
-  left: 32px;
 `;

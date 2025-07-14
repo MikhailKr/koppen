@@ -5,10 +5,12 @@ import {
   Typography,
   Grid,
   IconButton,
-  Divider,
   Tooltip,
-  Box,
   TextField,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import type { ForecastDb } from "../../shared/api/api";
@@ -17,6 +19,8 @@ import { useCreateOrDeleteForecast } from "../../entities/WindFarm/useCreateOrDe
 import { ForecastHorizonToggle } from "../../shared/widgets/ForecastProps/ForecastHorizionToggle";
 import { ForecastDeliveryFrequencyPicker } from "../../shared/widgets/ForecastProps/ForecastDeliveryFrequencyPicker";
 import type { WindFarmForecast } from "../../entities/WindFarm/WindFarm";
+import { generatePath, useNavigate } from "react-router-dom";
+import { appRoutes } from "../../app/appRoutes";
 
 type Props = {
   onUpdate: () => Promise<void>;
@@ -44,6 +48,8 @@ const WindFarmForecasts: React.FC<Props> = ({
     useState<WindFarmForecast | null>(null);
   const { createForecastRequest, isLoading } = useCreateOrDeleteForecast();
 
+  const navigate = useNavigate();
+
   const openCreate = () => {
     setCurrentForecast(null);
     setOpen(true);
@@ -59,38 +65,36 @@ const WindFarmForecasts: React.FC<Props> = ({
 
   return (
     <>
+      <Grid container justifyContent="space-between" alignItems="center">
+        <Typography variant="h5">Forecasts</Typography>
+        <Tooltip title="Add Forecast">
+          <IconButton onClick={openCreate}>
+            <AddIcon />
+          </IconButton>
+        </Tooltip>
+      </Grid>
       <Card>
         <CardContent>
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Typography variant="h6">Available Forecasts</Typography>
-            <Tooltip title="Add Forecast">
-              <IconButton onClick={openCreate}>
-                <AddIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-          <Divider sx={{ my: 2 }} />
-
-          {forecasts.map((forecast, i) => (
-            <Grid
-              key={i}
-              container
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Box>
-                <Typography>Name: {forecast.name}</Typography>
-                <Typography>Forecast horizon: {forecast.horizon}</Typography>
-
-                <Typography>
-                  Recipients: {forecast.recipients.join(",")}
-                </Typography>
-              </Box>
-              {/* <IconButton onClick={handleDelete}>
-                <DeleteIcon />
-              </IconButton> */}
-            </Grid>
-          ))}
+          <List>
+            {forecasts.map((forecast, i) => (
+              <ListItem key={i} disablePadding>
+                <ListItemButton
+                  onClick={() =>
+                    navigate(
+                      generatePath(appRoutes.forecast, {
+                        farmId: windFarmId,
+                        forecastId: "pepe",
+                      }),
+                    )
+                  }
+                >
+                  <ListItemText
+                    primary={`${forecast.name} (${forecast.horizon})`}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
         </CardContent>
       </Card>
 

@@ -5,7 +5,6 @@ import {
   Typography,
   Grid,
   IconButton,
-  Divider,
   TextField,
   Box,
 } from "@mui/material";
@@ -16,6 +15,7 @@ import EditDialog from "../../shared/widgets/EditDialog/EditDialog";
 import { useNavigate } from "react-router-dom";
 import { appRoutes } from "../../app/appRoutes";
 import { DeleteFarmButton } from "./DeleteFarmButton";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 type Props = {
   windFarm: WindFarmDb;
@@ -56,10 +56,24 @@ export const WindFarmGeneralnfo: React.FC<Props> = ({ windFarm, onUpdate }) => {
 
   return (
     <>
+      <Box sx={{ display: "flex", alignItems: "center", gap: "20px" }}>
+        <IconButton onClick={() => navigate(appRoutes.projects)} size="large">
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography variant="h4">{windFarm.name}</Typography>
+      </Box>
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Grid container justifyContent="space-between" alignItems="center">
-            <Typography variant="h6">Main Information</Typography>
+            <Box>
+              <Typography>
+                <strong>Description:</strong> {windFarm.description}
+              </Typography>
+              <Typography>
+                <strong>Coordinates:</strong> {windFarm.location.latitude},{" "}
+                {windFarm.location.longitude}
+              </Typography>
+            </Box>
             <Box>
               <IconButton onClick={() => setOpen(true)}>
                 <EditIcon />
@@ -67,17 +81,6 @@ export const WindFarmGeneralnfo: React.FC<Props> = ({ windFarm, onUpdate }) => {
               <DeleteFarmButton onDelete={handleDelete} />
             </Box>
           </Grid>
-          <Divider sx={{ my: 2 }} />
-          <Typography>
-            <strong>Name:</strong> {windFarm.name}
-          </Typography>
-          <Typography>
-            <strong>Description:</strong> {windFarm.description}
-          </Typography>
-          <Typography>
-            <strong>Coordinates:</strong> {windFarm.location.latitude},{" "}
-            {windFarm.location.longitude}
-          </Typography>
         </CardContent>
       </Card>
 

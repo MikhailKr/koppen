@@ -5,7 +5,7 @@ import { useWindFarmInfo } from "../../entities/WindFarm/useWindFarmInfo";
 import WindFarmTurbines from "./WindFarmTurbines";
 import WindFarmForecasts from "./WindFarmForecasts";
 import { WindFarmGeneralnfo } from "./WindFarmGeneralnfo";
-import { PageContainerStyled } from "./WindFarmInfoPage.styles";
+import { PageContainerStyled } from "../../shared/widgets/SharedStyles";
 
 export const WindFarmInfoPage: React.FC = () => {
   const { id: windFarmId } = useParams();

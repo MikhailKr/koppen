@@ -5,8 +5,8 @@ export const PageContainerStyled = styled(Paper)`
   padding: 40px;
   width: 100%;
   max-width: 600px;
-  height: 75vh; /* Высота на 80% от экрана */
-  overflow-y: auto; /* Включить вертикальный скролл */
+  height: 75vh;
+  overflow-y: auto;
   border-radius: 10px !important;
   align-self: center;
   margin: auto;

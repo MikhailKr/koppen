@@ -3,4 +3,5 @@ export const appRoutes = {
   projects: "/farms",
   farmAdd: "/farm/add",
   farmView: "/farm/:id",
+  forecast: "/farm/:farmId/forecast/:forecastId",
 };
