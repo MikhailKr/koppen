@@ -53,7 +53,7 @@ const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
   return (
     <>
       <Box justifyContent="center" sx={{ display: "flex" }}>
-        <Stepper activeStep={activeStep} sx={{ mb: 4, width: "70%" }}>
+        <Stepper activeStep={activeStep} sx={{ mb: 4, width: "90%" }}>
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -69,131 +69,136 @@ const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
               Step 1 of 2
             </Typography>
 
-            <Controller
-              name="name"
-              control={control}
-              rules={{ required: "Name is required" }}
-              render={({ field, fieldState }) => (
-                <TextField
-                  {...field}
-                  label="Name"
-                  fullWidth
-                  margin="normal"
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                />
-              )}
-            />
-
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Description (optional)"
-                  fullWidth
-                  multiline
-                  rows={3}
-                  margin="normal"
-                />
-              )}
-            />
-
-            <Grid container spacing={2}>
-              <Grid size={6}>
-                <Controller
-                  name="latitude"
-                  control={control}
-                  rules={{ required: "Latitude is required" }}
-                  render={({ field, fieldState }) => (
-                    <TextField
-                      {...field}
-                      label="Latitude"
-                      type="number"
-                      fullWidth
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid size={6}>
-                <Controller
-                  name="longitude"
-                  control={control}
-                  rules={{ required: "Longitude is required" }}
-                  render={({ field, fieldState }) => (
-                    <TextField
-                      {...field}
-                      label="Longitude"
-                      type="number"
-                      fullWidth
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
-
-            {turbines.map((item, index) => (
-              <Grid
-                container
-                spacing={2}
-                mt={2}
-                key={item.id}
-                alignItems="center"
-              >
-                <Grid size={5}>
-                  <Controller
-                    name={`turbines.${index}.modelId`}
-                    control={control}
-                    rules={{ required: "Model is required" }}
-                    render={({ field, fieldState }) => (
-                      <WindTurbineSelect
-                        isError={!!fieldState.error}
-                        onChange={(turbine) => field.onChange(turbine.id)}
-                        value={field.value}
-                        index={index}
-                      />
-                    )}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "25px" }}>
+              <Controller
+                name="name"
+                control={control}
+                rules={{ required: "Name is required" }}
+                render={({ field, fieldState }) => (
+                  <TextField
+                    {...field}
+                    label="Name"
+                    fullWidth
+                    margin="normal"
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
                   />
-                </Grid>
+                )}
+              />
 
-                <Grid size={5}>
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Description (optional)"
+                    fullWidth
+                    multiline
+                    rows={2}
+                    margin="normal"
+                  />
+                )}
+              />
+
+              <Grid container spacing={2}>
+                <Grid size={6}>
                   <Controller
-                    name={`turbines.${index}.number`}
+                    name="latitude"
                     control={control}
-                    rules={{ required: "Number is required" }}
+                    rules={{ required: "Latitude is required" }}
                     render={({ field, fieldState }) => (
                       <TextField
                         {...field}
-                        label="Number"
-                        fullWidth
+                        label="Latitude"
                         type="number"
+                        fullWidth
                         error={!!fieldState.error}
                         helperText={fieldState.error?.message}
                       />
                     )}
                   />
                 </Grid>
-
-                <Grid size={2}>
-                  <IconButton onClick={() => remove(index)}>
-                    <DeleteIcon color="error" />
-                  </IconButton>
+                <Grid size={6}>
+                  <Controller
+                    name="longitude"
+                    control={control}
+                    rules={{ required: "Longitude is required" }}
+                    render={({ field, fieldState }) => (
+                      <TextField
+                        {...field}
+                        label="Longitude"
+                        type="number"
+                        fullWidth
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                      />
+                    )}
+                  />
                 </Grid>
               </Grid>
-            ))}
 
-            <Button
-              onClick={() => append({ modelId: -1, modelName: "", number: 0 })}
-              sx={{ mt: 2 }}
-            >
-              Add Wind Turbine
-            </Button>
+              {turbines.map((item, index) => (
+                <Grid
+                  container
+                  spacing={2}
+                  mt={2}
+                  key={item.id}
+                  alignItems="center"
+                >
+                  <Grid size={5}>
+                    <Controller
+                      name={`turbines.${index}.modelId`}
+                      control={control}
+                      rules={{ required: "Model is required" }}
+                      render={({ field, fieldState }) => (
+                        <WindTurbineSelect
+                          isError={!!fieldState.error}
+                          onChange={(turbine) => field.onChange(turbine.id)}
+                          value={field.value}
+                          index={index}
+                        />
+                      )}
+                    />
+                  </Grid>
 
+                  <Grid size={5}>
+                    <Controller
+                      name={`turbines.${index}.number`}
+                      control={control}
+                      rules={{ required: "Number is required" }}
+                      render={({ field, fieldState }) => (
+                        <TextField
+                          {...field}
+                          label="Number"
+                          fullWidth
+                          type="number"
+                          error={!!fieldState.error}
+                          helperText={fieldState.error?.message}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid size={2}>
+                    <IconButton onClick={() => remove(index)}>
+                      <DeleteIcon color="error" />
+                    </IconButton>
+                  </Grid>
+                </Grid>
+              ))}
+
+              <Box>
+                <Button
+                  onClick={() =>
+                    append({ modelId: -1, modelName: "", number: 0 })
+                  }
+                  sx={{ mt: 2 }}
+                >
+                  Add Wind Turbine
+                </Button>
+              </Box>
+            </Box>
             <Box mt={4}>
               <Button variant="contained" color="error" onClick={handleNext}>
                 Next

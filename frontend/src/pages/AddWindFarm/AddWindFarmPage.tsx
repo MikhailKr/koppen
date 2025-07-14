@@ -5,7 +5,7 @@ import type { WindFarmFormData } from "../../entities/WindFarm/WindFarm";
 import { useCreateFarm } from "../../entities/WindFarm/useCreateFarm";
 import { useNavigate } from "react-router-dom";
 import { appRoutes } from "../../app/appRoutes";
-import { StyledPaper } from "./AddWindFarmPage.styles";
+import { PageContainerStyled } from "../../shared/widgets/SharedStyles";
 
 const newWindFarm: WindFarmFormData = {
   id: `new`,
@@ -60,9 +60,9 @@ export const AddWindFarmPage: FC = () => {
 
   return (
     <>
-      <StyledPaper elevation={3}>
+      <PageContainerStyled elevation={3}>
         <WindFarmForm windFarm={newWindFarm} onSubmit={handleFormSubmit} />
-      </StyledPaper>
+      </PageContainerStyled>
 
       <Backdrop
         open={isLoading}

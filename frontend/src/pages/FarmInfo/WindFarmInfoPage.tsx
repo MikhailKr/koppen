@@ -15,20 +15,24 @@ export const WindFarmInfoPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Container sx={{ textAlign: "center", mt: 10 }}>
-        <CircularProgress />
-        <Typography variant="h6" sx={{ mt: 2, color: "white" }}>
-          Loading wind farm data...
-        </Typography>
-      </Container>
+      <PageContainerStyled>
+        <Container sx={{ textAlign: "center", mt: 10 }}>
+          <CircularProgress />
+          <Typography variant="h6" sx={{ mt: 2, color: "white" }}>
+            Loading wind farm data...
+          </Typography>
+        </Container>
+      </PageContainerStyled>
     );
   }
 
   if (!windFarm || isError)
     return (
-      <Typography variant="h6" sx={{ mt: 2, color: "white" }}>
-        Some error happend :(
-      </Typography>
+      <PageContainerStyled>
+        <Typography variant="h6" sx={{ mt: 2, color: "white" }}>
+          Some error happend :(
+        </Typography>
+      </PageContainerStyled>
     );
 
   return (

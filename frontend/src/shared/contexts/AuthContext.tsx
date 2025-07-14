@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { useLoginApiAuthTokenPostMutation } from "../api/api";
+import { useNavigate } from "react-router-dom";
+import { appRoutes } from "../../app/appRoutes";
 
 interface AuthContextType {
   user: string | null;
@@ -24,6 +26,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.getItem(ACCESS_TOKEN_KEY),
   );
 
+  const navigate = useNavigate();
+
   const [loginMutation] = useLoginApiAuthTokenPostMutation();
 
   const login = async (username: string, password: string) => {
@@ -45,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = () => {
     setTokenAndUser({ token: null, user: null });
+    navigate(appRoutes.login);
   };
 
   const setTokenAndUser = ({

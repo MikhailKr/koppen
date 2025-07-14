@@ -1,9 +1,9 @@
 import React from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { WindFarmTable } from "../../shared/widgets/WindFarmTable/WindFarmTable";
-import { PageContainerStyled } from "./MainPage.styles";
 import { useNavigate } from "react-router-dom";
 import { appRoutes } from "../../app/appRoutes";
+import { PageContainerStyled } from "../../shared/widgets/SharedStyles";
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();

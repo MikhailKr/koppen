@@ -9,7 +9,6 @@ import {
   TableCell,
   TableBody,
   IconButton,
-  Button,
   Typography,
 } from "@mui/material";
 import { useWindFarmsList } from "../../../entities/WindFarms/useWindFarmsList";
