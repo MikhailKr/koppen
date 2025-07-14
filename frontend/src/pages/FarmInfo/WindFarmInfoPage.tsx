@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Container, Typography, CircularProgress, Box } from "@mui/material";
+import { Container, Typography, CircularProgress, Stack } from "@mui/material";
 import { useWindFarmInfo } from "../../entities/WindFarm/useWindFarmInfo";
 import WindFarmTurbines from "./WindFarmTurbines";
 import WindFarmForecasts from "./WindFarmForecasts";
@@ -37,7 +37,7 @@ export const WindFarmInfoPage: React.FC = () => {
 
   return (
     <PageContainerStyled>
-      <Box display="flex" flexDirection="column" gap={2}>
+      <Stack direction="column" gap={2}>
         <WindFarmGeneralnfo windFarm={windFarm} onUpdate={updateFarmInfo} />
         <WindFarmTurbines
           fleets={windFarm.wind_turbine_fleet}
@@ -48,7 +48,7 @@ export const WindFarmInfoPage: React.FC = () => {
           forecasts={windFarm.forecasts}
           onUpdate={updateFarmInfo}
         />
-      </Box>
+      </Stack>
     </PageContainerStyled>
   );
 };

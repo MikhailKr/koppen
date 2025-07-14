@@ -21,6 +21,7 @@ import { ForecastDeliveryFrequencyPicker } from "../../shared/widgets/ForecastPr
 import type { WindFarmForecast } from "../../entities/WindFarm/WindFarm";
 import { generatePath, useNavigate } from "react-router-dom";
 import { appRoutes } from "../../app/appRoutes";
+import { ForecastDeliveryTimePicker } from "../../shared/widgets/ForecastProps/ForecastDeliveryTimePicker";
 
 type Props = {
   onUpdate: () => Promise<void>;
@@ -131,6 +132,26 @@ const WindFarmForecasts: React.FC<Props> = ({
             setCurrentForecast((prev) => ({
               ...(prev ?? emptyForecast),
               forecast_frequency: newValue ?? "daily",
+            }))
+          }
+        />
+        <ForecastDeliveryTimePicker
+          value={currentForecast?.start_time}
+          onChange={(newValue) =>
+            setCurrentForecast((prev) => ({
+              ...(prev ?? emptyForecast),
+              start_time: newValue ?? new Date(),
+            }))
+          }
+        />
+        <TextField
+          label="Forecast recipient"
+          type="email"
+          value={currentForecast?.recipient}
+          onChange={(e) =>
+            setCurrentForecast((prev) => ({
+              ...(prev ?? emptyForecast),
+              recipient: e.target.value,
             }))
           }
         />

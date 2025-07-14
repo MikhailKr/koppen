@@ -230,12 +230,13 @@ const injectedRtkApi = api.injectEndpoints({
       },
     }),
     downloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGet:
-      build.query<
+      build.mutation<
         DownloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGetApiResponse,
         DownloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGetApiArg
       >({
         query: (queryArg) => ({
           url: `/api/forecast/history/${queryArg.historyRecordId}/download-csv`,
+          responseHandler: (response: any) => response.blob(),
         }),
       }),
     getForecastHistoryApiForecastHistoryWindFarmIdGet: build.query<
@@ -559,7 +560,7 @@ export const {
   useUpdateWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchMutation,
   useDeleteWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteMutation,
   useLoginApiAuthTokenPostMutation,
-  useDownloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGetQuery,
+  useDownloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGetMutation,
   useGetForecastHistoryApiForecastHistoryWindFarmIdGetQuery,
   useForecastApiForecastWindFarmIdGetQuery,
   useServeSpaFullPathGetQuery,
