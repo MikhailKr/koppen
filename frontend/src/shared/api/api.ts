@@ -1,225 +1,226 @@
 import { emptySplitApi as api } from "./emptyApi";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
-    getWindFarmsWindEnergyUnitsWindFarmsGet: build.query<
-      GetWindFarmsWindEnergyUnitsWindFarmsGetApiResponse,
-      GetWindFarmsWindEnergyUnitsWindFarmsGetApiArg
+    getWindFarmsApiWindEnergyUnitsWindFarmsGet: build.query<
+      GetWindFarmsApiWindEnergyUnitsWindFarmsGetApiResponse,
+      GetWindFarmsApiWindEnergyUnitsWindFarmsGetApiArg
     >({
-      query: () => ({ url: `/wind-energy-units/wind_farms` }),
+      query: () => ({ url: `/api/wind-energy-units/wind_farms` }),
     }),
-    createWindFarmWindEnergyUnitsWindFarmsPost: build.mutation<
-      CreateWindFarmWindEnergyUnitsWindFarmsPostApiResponse,
-      CreateWindFarmWindEnergyUnitsWindFarmsPostApiArg
+    createWindFarmApiWindEnergyUnitsWindFarmsPost: build.mutation<
+      CreateWindFarmApiWindEnergyUnitsWindFarmsPostApiResponse,
+      CreateWindFarmApiWindEnergyUnitsWindFarmsPostApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_farms`,
+        url: `/api/wind-energy-units/wind_farms`,
         method: "POST",
         body: queryArg.windFarmCreate,
       }),
     }),
-    createLocationWindEnergyUnitsLocationPost: build.mutation<
-      CreateLocationWindEnergyUnitsLocationPostApiResponse,
-      CreateLocationWindEnergyUnitsLocationPostApiArg
+    createLocationApiWindEnergyUnitsLocationPost: build.mutation<
+      CreateLocationApiWindEnergyUnitsLocationPostApiResponse,
+      CreateLocationApiWindEnergyUnitsLocationPostApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/location`,
+        url: `/api/wind-energy-units/location`,
         method: "POST",
         body: queryArg.locationCreate,
       }),
     }),
-    updateWindFarmWindEnergyUnitsWindFarmsWindFarmIdPatch: build.mutation<
-      UpdateWindFarmWindEnergyUnitsWindFarmsWindFarmIdPatchApiResponse,
-      UpdateWindFarmWindEnergyUnitsWindFarmsWindFarmIdPatchApiArg
+    updateWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdPatch: build.mutation<
+      UpdateWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdPatchApiResponse,
+      UpdateWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdPatchApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
+        url: `/api/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
         method: "PATCH",
         body: queryArg.windFarmUpdate,
       }),
     }),
-    getWindFarmWindEnergyUnitsWindFarmsWindFarmIdGet: build.query<
-      GetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetApiResponse,
-      GetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetApiArg
+    getWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdGet: build.query<
+      GetWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdGetApiResponse,
+      GetWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdGetApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
+        url: `/api/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
       }),
     }),
-    deleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDelete: build.mutation<
-      DeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteApiResponse,
-      DeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteApiArg
+    deleteWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdDelete: build.mutation<
+      DeleteWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdDeleteApiResponse,
+      DeleteWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdDeleteApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
+        url: `/api/wind-energy-units/wind_farms/${queryArg.windFarmId}`,
         method: "DELETE",
       }),
     }),
-    createForecastWindEnergyUnitsWindFarmsWindFarmIdForecastsPost:
+    createForecastApiWindEnergyUnitsWindFarmsWindFarmIdForecastsPost:
       build.mutation<
-        CreateForecastWindEnergyUnitsWindFarmsWindFarmIdForecastsPostApiResponse,
-        CreateForecastWindEnergyUnitsWindFarmsWindFarmIdForecastsPostApiArg
+        CreateForecastApiWindEnergyUnitsWindFarmsWindFarmIdForecastsPostApiResponse,
+        CreateForecastApiWindEnergyUnitsWindFarmsWindFarmIdForecastsPostApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/wind_farms/${queryArg.windFarmId}/forecasts`,
+          url: `/api/wind-energy-units/wind_farms/${queryArg.windFarmId}/forecasts`,
           method: "POST",
           body: queryArg.windFarmForecastCreate,
         }),
       }),
-    getWindFarmForecastsWindEnergyUnitsWindFarmsWindFarmIdForecastsGet:
+    getWindFarmForecastsApiWindEnergyUnitsWindFarmsWindFarmIdForecastsGet:
       build.query<
-        GetWindFarmForecastsWindEnergyUnitsWindFarmsWindFarmIdForecastsGetApiResponse,
-        GetWindFarmForecastsWindEnergyUnitsWindFarmsWindFarmIdForecastsGetApiArg
+        GetWindFarmForecastsApiWindEnergyUnitsWindFarmsWindFarmIdForecastsGetApiResponse,
+        GetWindFarmForecastsApiWindEnergyUnitsWindFarmsWindFarmIdForecastsGetApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/wind_farms/${queryArg.windFarmId}/forecasts`,
+          url: `/api/wind-energy-units/wind_farms/${queryArg.windFarmId}/forecasts`,
         }),
       }),
-    getPowerCurvesWindEnergyUnitsPowerCurvesGet: build.query<
-      GetPowerCurvesWindEnergyUnitsPowerCurvesGetApiResponse,
-      GetPowerCurvesWindEnergyUnitsPowerCurvesGetApiArg
+    getPowerCurvesApiWindEnergyUnitsPowerCurvesGet: build.query<
+      GetPowerCurvesApiWindEnergyUnitsPowerCurvesGetApiResponse,
+      GetPowerCurvesApiWindEnergyUnitsPowerCurvesGetApiArg
     >({
-      query: () => ({ url: `/wind-energy-units/power_curves` }),
+      query: () => ({ url: `/api/wind-energy-units/power_curves` }),
     }),
-    createPowerCurveWindEnergyUnitsPowerCurvesPost: build.mutation<
-      CreatePowerCurveWindEnergyUnitsPowerCurvesPostApiResponse,
-      CreatePowerCurveWindEnergyUnitsPowerCurvesPostApiArg
+    createPowerCurveApiWindEnergyUnitsPowerCurvesPost: build.mutation<
+      CreatePowerCurveApiWindEnergyUnitsPowerCurvesPostApiResponse,
+      CreatePowerCurveApiWindEnergyUnitsPowerCurvesPostApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/power_curves`,
+        url: `/api/wind-energy-units/power_curves`,
         method: "POST",
         body: queryArg.powerCurveCreate,
       }),
     }),
-    getPowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdGet: build.query<
-      GetPowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdGetApiResponse,
-      GetPowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdGetApiArg
+    getPowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdGet: build.query<
+      GetPowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdGetApiResponse,
+      GetPowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdGetApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/power_curves/${queryArg.powerCurveId}`,
+        url: `/api/wind-energy-units/power_curves/${queryArg.powerCurveId}`,
       }),
     }),
-    updatePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdPatch: build.mutation<
-      UpdatePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdPatchApiResponse,
-      UpdatePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdPatchApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/wind-energy-units/power_curves/${queryArg.powerCurveId}`,
-        method: "PATCH",
-        body: queryArg.powerCurveUpdate,
-      }),
-    }),
-    deletePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdDelete:
+    updatePowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdPatch:
       build.mutation<
-        DeletePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdDeleteApiResponse,
-        DeletePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdDeleteApiArg
+        UpdatePowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdPatchApiResponse,
+        UpdatePowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdPatchApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/power_curves/${queryArg.powerCurveId}`,
+          url: `/api/wind-energy-units/power_curves/${queryArg.powerCurveId}`,
+          method: "PATCH",
+          body: queryArg.powerCurveUpdate,
+        }),
+      }),
+    deletePowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdDelete:
+      build.mutation<
+        DeletePowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdDeleteApiResponse,
+        DeletePowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdDeleteApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/wind-energy-units/power_curves/${queryArg.powerCurveId}`,
           method: "DELETE",
         }),
       }),
-    getWindTurbinesWindEnergyUnitsWindTurbinesGet: build.query<
-      GetWindTurbinesWindEnergyUnitsWindTurbinesGetApiResponse,
-      GetWindTurbinesWindEnergyUnitsWindTurbinesGetApiArg
+    getWindTurbinesApiWindEnergyUnitsWindTurbinesGet: build.query<
+      GetWindTurbinesApiWindEnergyUnitsWindTurbinesGetApiResponse,
+      GetWindTurbinesApiWindEnergyUnitsWindTurbinesGetApiArg
     >({
-      query: () => ({ url: `/wind-energy-units/wind_turbines` }),
+      query: () => ({ url: `/api/wind-energy-units/wind_turbines` }),
     }),
-    createWindTurbineWindEnergyUnitsWindTurbinesPost: build.mutation<
-      CreateWindTurbineWindEnergyUnitsWindTurbinesPostApiResponse,
-      CreateWindTurbineWindEnergyUnitsWindTurbinesPostApiArg
+    createWindTurbineApiWindEnergyUnitsWindTurbinesPost: build.mutation<
+      CreateWindTurbineApiWindEnergyUnitsWindTurbinesPostApiResponse,
+      CreateWindTurbineApiWindEnergyUnitsWindTurbinesPostApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_turbines`,
+        url: `/api/wind-energy-units/wind_turbines`,
         method: "POST",
         body: queryArg.windTurbineCreate,
       }),
     }),
-    getWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdGet: build.query<
-      GetWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdGetApiResponse,
-      GetWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdGetApiArg
+    getWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdGet: build.query<
+      GetWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdGetApiResponse,
+      GetWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdGetApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_turbines/${queryArg.windTurbineId}`,
+        url: `/api/wind-energy-units/wind_turbines/${queryArg.windTurbineId}`,
       }),
     }),
-    updateWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdPatch:
+    updateWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdPatch:
       build.mutation<
-        UpdateWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdPatchApiResponse,
-        UpdateWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdPatchApiArg
+        UpdateWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdPatchApiResponse,
+        UpdateWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdPatchApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/wind_turbines/${queryArg.windTurbineId}`,
+          url: `/api/wind-energy-units/wind_turbines/${queryArg.windTurbineId}`,
           method: "PATCH",
           body: queryArg.windTurbineUpdate,
         }),
       }),
-    deleteWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdDelete:
+    deleteWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdDelete:
       build.mutation<
-        DeleteWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdDeleteApiResponse,
-        DeleteWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdDeleteApiArg
+        DeleteWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdDeleteApiResponse,
+        DeleteWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdDeleteApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/wind_turbines/${queryArg.windTurbineId}`,
+          url: `/api/wind-energy-units/wind_turbines/${queryArg.windTurbineId}`,
           method: "DELETE",
         }),
       }),
-    getWindFleetsWindEnergyUnitsWindTurbineFleetsGet: build.query<
-      GetWindFleetsWindEnergyUnitsWindTurbineFleetsGetApiResponse,
-      GetWindFleetsWindEnergyUnitsWindTurbineFleetsGetApiArg
+    getWindFleetsApiWindEnergyUnitsWindTurbineFleetsGet: build.query<
+      GetWindFleetsApiWindEnergyUnitsWindTurbineFleetsGetApiResponse,
+      GetWindFleetsApiWindEnergyUnitsWindTurbineFleetsGetApiArg
     >({
-      query: () => ({ url: `/wind-energy-units/wind_turbine_fleets` }),
+      query: () => ({ url: `/api/wind-energy-units/wind_turbine_fleets` }),
     }),
-    createWindFleetWindEnergyUnitsWindTurbineFleetsPost: build.mutation<
-      CreateWindFleetWindEnergyUnitsWindTurbineFleetsPostApiResponse,
-      CreateWindFleetWindEnergyUnitsWindTurbineFleetsPostApiArg
+    createWindFleetApiWindEnergyUnitsWindTurbineFleetsPost: build.mutation<
+      CreateWindFleetApiWindEnergyUnitsWindTurbineFleetsPostApiResponse,
+      CreateWindFleetApiWindEnergyUnitsWindTurbineFleetsPostApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_turbine_fleets`,
+        url: `/api/wind-energy-units/wind_turbine_fleets`,
         method: "POST",
         body: queryArg.windTurbineFleetCreate,
       }),
     }),
-    getWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdGet: build.query<
-      GetWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdGetApiResponse,
-      GetWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdGetApiArg
+    getWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdGet: build.query<
+      GetWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdGetApiResponse,
+      GetWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdGetApiArg
     >({
       query: (queryArg) => ({
-        url: `/wind-energy-units/wind_turbine_fleets/${queryArg.windFleetId}`,
+        url: `/api/wind-energy-units/wind_turbine_fleets/${queryArg.windFleetId}`,
       }),
     }),
-    updateWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdPatch:
+    updateWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdPatch:
       build.mutation<
-        UpdateWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchApiResponse,
-        UpdateWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchApiArg
+        UpdateWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchApiResponse,
+        UpdateWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/wind_turbine_fleets/${queryArg.windFleetId}`,
+          url: `/api/wind-energy-units/wind_turbine_fleets/${queryArg.windFleetId}`,
           method: "PATCH",
           body: queryArg.windTurbineFleetUpdate,
         }),
       }),
-    deleteWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdDelete:
+    deleteWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdDelete:
       build.mutation<
-        DeleteWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteApiResponse,
-        DeleteWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteApiArg
+        DeleteWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteApiResponse,
+        DeleteWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteApiArg
       >({
         query: (queryArg) => ({
-          url: `/wind-energy-units/wind_turbine_fleets/${queryArg.windFleetId}`,
+          url: `/api/wind-energy-units/wind_turbine_fleets/${queryArg.windFleetId}`,
           method: "DELETE",
         }),
       }),
-    loginAuthTokenPost: build.mutation<
-      LoginAuthTokenPostApiResponse,
-      LoginAuthTokenPostApiArg
+    loginApiAuthTokenPost: build.mutation<
+      LoginApiAuthTokenPostApiResponse,
+      LoginApiAuthTokenPostApiArg
     >({
       // NOTE: DONT OVERRIDE LOGIN METHOD. It use application/x-www-form-urlencoded.
       query: (queryArg) => {
         const body = new URLSearchParams();
-        body.set("username", queryArg.bodyLoginAuthTokenPost.username);
-        body.set("password", queryArg.bodyLoginAuthTokenPost.password);
+        body.set("username", queryArg.bodyLoginApiAuthTokenPost.username);
+        body.set("password", queryArg.bodyLoginApiAuthTokenPost.password);
 
         return {
-          url: "/auth/token",
+          url: "/api/auth/token",
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -228,145 +229,186 @@ const injectedRtkApi = api.injectEndpoints({
         };
       },
     }),
-    forecastForecastWindFarmIdGet: build.query<
-      ForecastForecastWindFarmIdGetApiResponse,
-      ForecastForecastWindFarmIdGetApiArg
+    downloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGet:
+      build.query<
+        DownloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGetApiResponse,
+        DownloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGetApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/forecast/history/${queryArg.historyRecordId}/download-csv`,
+        }),
+      }),
+    getForecastHistoryApiForecastHistoryWindFarmIdGet: build.query<
+      GetForecastHistoryApiForecastHistoryWindFarmIdGetApiResponse,
+      GetForecastHistoryApiForecastHistoryWindFarmIdGetApiArg
     >({
-      query: (queryArg) => ({ url: `/forecast/${queryArg.windFarmId}` }),
+      query: (queryArg) => ({
+        url: `/api/forecast/history/${queryArg.windFarmId}`,
+      }),
+    }),
+    forecastApiForecastWindFarmIdGet: build.query<
+      ForecastApiForecastWindFarmIdGetApiResponse,
+      ForecastApiForecastWindFarmIdGetApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/forecast/${queryArg.windFarmId}` }),
+    }),
+    serveSpaFullPathGet: build.query<
+      ServeSpaFullPathGetApiResponse,
+      ServeSpaFullPathGetApiArg
+    >({
+      query: (queryArg) => ({ url: `/${queryArg.fullPath}` }),
     }),
   }),
   overrideExisting: false,
 });
 export { injectedRtkApi as enhancedApi };
-export type GetWindFarmsWindEnergyUnitsWindFarmsGetApiResponse =
+export type GetWindFarmsApiWindEnergyUnitsWindFarmsGetApiResponse =
   /** status 200 Successful Response */ any;
-export type GetWindFarmsWindEnergyUnitsWindFarmsGetApiArg = void;
-export type CreateWindFarmWindEnergyUnitsWindFarmsPostApiResponse =
+export type GetWindFarmsApiWindEnergyUnitsWindFarmsGetApiArg = void;
+export type CreateWindFarmApiWindEnergyUnitsWindFarmsPostApiResponse =
   /** status 201 Successful Response */ WindFarmDb;
-export type CreateWindFarmWindEnergyUnitsWindFarmsPostApiArg = {
+export type CreateWindFarmApiWindEnergyUnitsWindFarmsPostApiArg = {
   windFarmCreate: WindFarmCreate;
 };
-export type CreateLocationWindEnergyUnitsLocationPostApiResponse =
+export type CreateLocationApiWindEnergyUnitsLocationPostApiResponse =
   /** status 201 Successful Response */ LocationDb;
-export type CreateLocationWindEnergyUnitsLocationPostApiArg = {
+export type CreateLocationApiWindEnergyUnitsLocationPostApiArg = {
   locationCreate: LocationCreate;
 };
-export type UpdateWindFarmWindEnergyUnitsWindFarmsWindFarmIdPatchApiResponse =
+export type UpdateWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdPatchApiResponse =
   /** status 200 Successful Response */ WindFarmDb;
-export type UpdateWindFarmWindEnergyUnitsWindFarmsWindFarmIdPatchApiArg = {
+export type UpdateWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdPatchApiArg = {
   windFarmId: number;
   windFarmUpdate: WindFarmUpdate;
 };
-export type GetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetApiResponse =
+export type GetWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdGetApiResponse =
   /** status 200 Successful Response */ WindFarmDb;
-export type GetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetApiArg = {
+export type GetWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdGetApiArg = {
   windFarmId: number;
 };
-export type DeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteApiResponse =
+export type DeleteWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdDeleteApiResponse =
   unknown;
-export type DeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteApiArg = {
+export type DeleteWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdDeleteApiArg = {
   windFarmId: number;
 };
-export type CreateForecastWindEnergyUnitsWindFarmsWindFarmIdForecastsPostApiResponse =
+export type CreateForecastApiWindEnergyUnitsWindFarmsWindFarmIdForecastsPostApiResponse =
   /** status 200 Successful Response */ any;
-export type CreateForecastWindEnergyUnitsWindFarmsWindFarmIdForecastsPostApiArg =
+export type CreateForecastApiWindEnergyUnitsWindFarmsWindFarmIdForecastsPostApiArg =
   {
     windFarmId: number;
     windFarmForecastCreate: WindFarmForecastCreate;
   };
-export type GetWindFarmForecastsWindEnergyUnitsWindFarmsWindFarmIdForecastsGetApiResponse =
+export type GetWindFarmForecastsApiWindEnergyUnitsWindFarmsWindFarmIdForecastsGetApiResponse =
   /** status 200 Successful Response */ any;
-export type GetWindFarmForecastsWindEnergyUnitsWindFarmsWindFarmIdForecastsGetApiArg =
+export type GetWindFarmForecastsApiWindEnergyUnitsWindFarmsWindFarmIdForecastsGetApiArg =
   {
     windFarmId: number;
   };
-export type GetPowerCurvesWindEnergyUnitsPowerCurvesGetApiResponse =
+export type GetPowerCurvesApiWindEnergyUnitsPowerCurvesGetApiResponse =
   /** status 200 Successful Response */ PowerCurveDb[];
-export type GetPowerCurvesWindEnergyUnitsPowerCurvesGetApiArg = void;
-export type CreatePowerCurveWindEnergyUnitsPowerCurvesPostApiResponse =
+export type GetPowerCurvesApiWindEnergyUnitsPowerCurvesGetApiArg = void;
+export type CreatePowerCurveApiWindEnergyUnitsPowerCurvesPostApiResponse =
   /** status 201 Successful Response */ PowerCurveDb;
-export type CreatePowerCurveWindEnergyUnitsPowerCurvesPostApiArg = {
+export type CreatePowerCurveApiWindEnergyUnitsPowerCurvesPostApiArg = {
   powerCurveCreate: PowerCurveCreate;
 };
-export type GetPowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdGetApiResponse =
+export type GetPowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdGetApiResponse =
   /** status 200 Successful Response */ PowerCurveDb;
-export type GetPowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdGetApiArg = {
+export type GetPowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdGetApiArg = {
   powerCurveId: number;
 };
-export type UpdatePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdPatchApiResponse =
+export type UpdatePowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdPatchApiResponse =
   /** status 200 Successful Response */ PowerCurveDb;
-export type UpdatePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdPatchApiArg =
+export type UpdatePowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdPatchApiArg =
   {
     powerCurveId: number;
     powerCurveUpdate: PowerCurveUpdate;
   };
-export type DeletePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdDeleteApiResponse =
+export type DeletePowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdDeleteApiResponse =
   unknown;
-export type DeletePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdDeleteApiArg =
+export type DeletePowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdDeleteApiArg =
   {
     powerCurveId: number;
   };
-export type GetWindTurbinesWindEnergyUnitsWindTurbinesGetApiResponse =
+export type GetWindTurbinesApiWindEnergyUnitsWindTurbinesGetApiResponse =
   /** status 200 Successful Response */ WindTurbineDb[];
-export type GetWindTurbinesWindEnergyUnitsWindTurbinesGetApiArg = void;
-export type CreateWindTurbineWindEnergyUnitsWindTurbinesPostApiResponse =
+export type GetWindTurbinesApiWindEnergyUnitsWindTurbinesGetApiArg = void;
+export type CreateWindTurbineApiWindEnergyUnitsWindTurbinesPostApiResponse =
   /** status 201 Successful Response */ WindTurbineDb;
-export type CreateWindTurbineWindEnergyUnitsWindTurbinesPostApiArg = {
+export type CreateWindTurbineApiWindEnergyUnitsWindTurbinesPostApiArg = {
   windTurbineCreate: WindTurbineCreate;
 };
-export type GetWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdGetApiResponse =
+export type GetWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdGetApiResponse =
   /** status 200 Successful Response */ WindTurbineDb;
-export type GetWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdGetApiArg = {
-  windTurbineId: number;
-};
-export type UpdateWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdPatchApiResponse =
+export type GetWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdGetApiArg =
+  {
+    windTurbineId: number;
+  };
+export type UpdateWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdPatchApiResponse =
   /** status 200 Successful Response */ WindTurbineDb;
-export type UpdateWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdPatchApiArg =
+export type UpdateWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdPatchApiArg =
   {
     windTurbineId: number;
     windTurbineUpdate: WindTurbineUpdate;
   };
-export type DeleteWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdDeleteApiResponse =
+export type DeleteWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdDeleteApiResponse =
   unknown;
-export type DeleteWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdDeleteApiArg =
+export type DeleteWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdDeleteApiArg =
   {
     windTurbineId: number;
   };
-export type GetWindFleetsWindEnergyUnitsWindTurbineFleetsGetApiResponse =
+export type GetWindFleetsApiWindEnergyUnitsWindTurbineFleetsGetApiResponse =
   /** status 200 Successful Response */ WindTurbineFleetDb[];
-export type GetWindFleetsWindEnergyUnitsWindTurbineFleetsGetApiArg = void;
-export type CreateWindFleetWindEnergyUnitsWindTurbineFleetsPostApiResponse =
+export type GetWindFleetsApiWindEnergyUnitsWindTurbineFleetsGetApiArg = void;
+export type CreateWindFleetApiWindEnergyUnitsWindTurbineFleetsPostApiResponse =
   /** status 201 Successful Response */ WindTurbineFleetDb;
-export type CreateWindFleetWindEnergyUnitsWindTurbineFleetsPostApiArg = {
+export type CreateWindFleetApiWindEnergyUnitsWindTurbineFleetsPostApiArg = {
   windTurbineFleetCreate: WindTurbineFleetCreate;
 };
-export type GetWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdGetApiResponse =
+export type GetWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdGetApiResponse =
   /** status 200 Successful Response */ WindTurbineFleetDb;
-export type GetWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdGetApiArg = {
-  windFleetId: number;
-};
-export type UpdateWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchApiResponse =
+export type GetWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdGetApiArg =
+  {
+    windFleetId: number;
+  };
+export type UpdateWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchApiResponse =
   /** status 200 Successful Response */ WindTurbineFleetDb;
-export type UpdateWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchApiArg =
+export type UpdateWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchApiArg =
   {
     windFleetId: number;
     windTurbineFleetUpdate: WindTurbineFleetUpdate;
   };
-export type DeleteWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteApiResponse =
+export type DeleteWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteApiResponse =
   unknown;
-export type DeleteWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteApiArg =
+export type DeleteWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteApiArg =
   {
     windFleetId: number;
   };
-export type LoginAuthTokenPostApiResponse =
+export type LoginApiAuthTokenPostApiResponse =
   /** status 200 Successful Response */ any;
-export type LoginAuthTokenPostApiArg = {
-  bodyLoginAuthTokenPost: BodyLoginAuthTokenPost;
+export type LoginApiAuthTokenPostApiArg = {
+  bodyLoginApiAuthTokenPost: BodyLoginApiAuthTokenPost;
 };
-export type ForecastForecastWindFarmIdGetApiResponse =
+export type DownloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGetApiResponse =
   /** status 200 Successful Response */ any;
-export type ForecastForecastWindFarmIdGetApiArg = {
+export type DownloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGetApiArg =
+  {
+    historyRecordId: number;
+  };
+export type GetForecastHistoryApiForecastHistoryWindFarmIdGetApiResponse =
+  /** status 200 Successful Response */ ForecastHistoryDb[];
+export type GetForecastHistoryApiForecastHistoryWindFarmIdGetApiArg = {
   windFarmId: number;
+};
+export type ForecastApiForecastWindFarmIdGetApiResponse =
+  /** status 200 Successful Response */ any;
+export type ForecastApiForecastWindFarmIdGetApiArg = {
+  windFarmId: number;
+};
+export type ServeSpaFullPathGetApiResponse =
+  /** status 200 Successful Response */ any;
+export type ServeSpaFullPathGetApiArg = {
+  fullPath: string;
 };
 export type LocationDb = {
   id: number;
@@ -391,13 +433,17 @@ export type WindTurbineFleetDb = {
   number_of_turbines: number;
   wind_turbine?: WindTurbineDb | null;
 };
-export type TimeResolutionEnum = "minute" | "hour" | "day";
+export type GranularityEnum = "60 minutes" | "30 minutes" | "15 minutes";
+export type HorizonEnum = "3 hours" | "24 hours" | "48 hours" | "120 hours";
+export type ForecastFrequencyEnum = "daily" | "hourly";
 export type ForecastDb = {
-  time_resolution: TimeResolutionEnum;
-  repeat_daily?: boolean;
-  daily_time?: string | null;
-  repeat_hourly?: boolean;
-  hourly_minute?: number | null;
+  name: string;
+  granularity: GranularityEnum;
+  horizon: HorizonEnum;
+  recipients: string[];
+  start_time: string | null;
+  forecast_frequency: ForecastFrequencyEnum;
+  enable?: boolean;
   wind_farm_id: number;
 };
 export type WindFarmDb = {
@@ -421,11 +467,13 @@ export type LocationCreate = {
   latitude: number;
 };
 export type WindFarmForecastCreate = {
-  time_resolution: TimeResolutionEnum;
-  repeat_daily?: boolean;
-  daily_time?: string | null;
-  repeat_hourly?: boolean;
-  hourly_minute?: number | null;
+  name: string;
+  granularity?: GranularityEnum;
+  horizon?: HorizonEnum;
+  recipients?: string[];
+  start_time?: string | null;
+  forecast_frequency?: ForecastFrequencyEnum;
+  enable?: boolean;
 };
 export type WindTurbineFleetCreate = {
   number_of_turbines: number;
@@ -473,7 +521,7 @@ export type WindTurbineFleetUpdate = {
   number_of_turbines?: number | null;
   wind_turbine_id?: number | null;
 };
-export type BodyLoginAuthTokenPost = {
+export type BodyLoginApiAuthTokenPost = {
   grant_type?: string | null;
   username: string;
   password: string;
@@ -481,32 +529,41 @@ export type BodyLoginAuthTokenPost = {
   client_id?: string | null;
   client_secret?: string | null;
 };
+export type ForecastHistoryDb = {
+  id: number;
+  forecast_id: number;
+  generated_at: string;
+};
 export const {
-  useGetWindFarmsWindEnergyUnitsWindFarmsGetQuery,
-  useCreateWindFarmWindEnergyUnitsWindFarmsPostMutation,
-  useCreateLocationWindEnergyUnitsLocationPostMutation,
-  useUpdateWindFarmWindEnergyUnitsWindFarmsWindFarmIdPatchMutation,
-  useGetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetQuery,
-  useDeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteMutation,
-  useCreateForecastWindEnergyUnitsWindFarmsWindFarmIdForecastsPostMutation,
-  useGetWindFarmForecastsWindEnergyUnitsWindFarmsWindFarmIdForecastsGetQuery,
-  useGetPowerCurvesWindEnergyUnitsPowerCurvesGetQuery,
-  useCreatePowerCurveWindEnergyUnitsPowerCurvesPostMutation,
-  useGetPowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdGetQuery,
-  useUpdatePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdPatchMutation,
-  useDeletePowerCurveWindEnergyUnitsPowerCurvesPowerCurveIdDeleteMutation,
-  useGetWindTurbinesWindEnergyUnitsWindTurbinesGetQuery,
-  useCreateWindTurbineWindEnergyUnitsWindTurbinesPostMutation,
-  useGetWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdGetQuery,
-  useUpdateWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdPatchMutation,
-  useDeleteWindTurbineWindEnergyUnitsWindTurbinesWindTurbineIdDeleteMutation,
-  useGetWindFleetsWindEnergyUnitsWindTurbineFleetsGetQuery,
-  useCreateWindFleetWindEnergyUnitsWindTurbineFleetsPostMutation,
-  useGetWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdGetQuery,
-  useUpdateWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchMutation,
-  useDeleteWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteMutation,
-  useLoginAuthTokenPostMutation,
-  useForecastForecastWindFarmIdGetQuery,
+  useGetWindFarmsApiWindEnergyUnitsWindFarmsGetQuery,
+  useCreateWindFarmApiWindEnergyUnitsWindFarmsPostMutation,
+  useCreateLocationApiWindEnergyUnitsLocationPostMutation,
+  useUpdateWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdPatchMutation,
+  useGetWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdGetQuery,
+  useDeleteWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdDeleteMutation,
+  useCreateForecastApiWindEnergyUnitsWindFarmsWindFarmIdForecastsPostMutation,
+  useGetWindFarmForecastsApiWindEnergyUnitsWindFarmsWindFarmIdForecastsGetQuery,
+  useGetPowerCurvesApiWindEnergyUnitsPowerCurvesGetQuery,
+  useCreatePowerCurveApiWindEnergyUnitsPowerCurvesPostMutation,
+  useGetPowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdGetQuery,
+  useUpdatePowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdPatchMutation,
+  useDeletePowerCurveApiWindEnergyUnitsPowerCurvesPowerCurveIdDeleteMutation,
+  useGetWindTurbinesApiWindEnergyUnitsWindTurbinesGetQuery,
+  useCreateWindTurbineApiWindEnergyUnitsWindTurbinesPostMutation,
+  useGetWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdGetQuery,
+  useUpdateWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdPatchMutation,
+  useDeleteWindTurbineApiWindEnergyUnitsWindTurbinesWindTurbineIdDeleteMutation,
+  useGetWindFleetsApiWindEnergyUnitsWindTurbineFleetsGetQuery,
+  useCreateWindFleetApiWindEnergyUnitsWindTurbineFleetsPostMutation,
+  useGetWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdGetQuery,
+  useUpdateWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchMutation,
+  useDeleteWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteMutation,
+  useLoginApiAuthTokenPostMutation,
+  useDownloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGetQuery,
+  useGetForecastHistoryApiForecastHistoryWindFarmIdGetQuery,
+  useForecastApiForecastWindFarmIdGetQuery,
+  useServeSpaFullPathGetQuery,
 } = injectedRtkApi;
+
 export const useLazyForecastForecastWindFarmIdGetQuery =
-  injectedRtkApi.endpoints.forecastForecastWindFarmIdGet.useLazyQuery;
+  injectedRtkApi.endpoints.forecastApiForecastWindFarmIdGet.useLazyQuery;

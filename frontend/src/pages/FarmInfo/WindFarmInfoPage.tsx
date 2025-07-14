@@ -40,9 +40,8 @@ export const WindFarmInfoPage: React.FC = () => {
           onUpdate={updateFarmInfo}
         />
         <WindFarmForecasts
-          forecasts={windFarm.forecasts}
           windFarmId={windFarm.id}
-          windFarmName={windFarm.name}
+          forecasts={windFarm.forecasts}
           onUpdate={updateFarmInfo}
         />
       </Box>

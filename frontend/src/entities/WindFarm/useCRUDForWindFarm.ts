@@ -1,16 +1,16 @@
 import { useCallback } from "react";
 import {
-  useUpdateWindFarmWindEnergyUnitsWindFarmsWindFarmIdPatchMutation,
-  useDeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteMutation,
+  useUpdateWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdPatchMutation,
+  useDeleteWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdDeleteMutation,
   type WindFarmUpdate,
 } from "../../shared/api/api";
 
 export const useCRUDForWindFarm = () => {
   const [updateWindFarm, { isLoading: isUpdating }] =
-    useUpdateWindFarmWindEnergyUnitsWindFarmsWindFarmIdPatchMutation();
+    useUpdateWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdPatchMutation();
 
   const [removeWindFarm, { isLoading: isDeleting }] =
-    useDeleteWindFarmWindEnergyUnitsWindFarmsWindFarmIdDeleteMutation();
+    useDeleteWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdDeleteMutation();
 
   const editWindFarm = useCallback(
     async (windFarmId: number, data: WindFarmUpdate) => {

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { useLoginAuthTokenPostMutation } from "../api/api";
+import { useLoginApiAuthTokenPostMutation } from "../api/api";
 
 interface AuthContextType {
   user: string | null;
@@ -24,11 +24,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.getItem(ACCESS_TOKEN_KEY),
   );
 
-  const [loginMutation] = useLoginAuthTokenPostMutation();
+  const [loginMutation] = useLoginApiAuthTokenPostMutation();
 
   const login = async (username: string, password: string) => {
     const result = await loginMutation({
-      bodyLoginAuthTokenPost: {
+      bodyLoginApiAuthTokenPost: {
         username,
         password,
       },

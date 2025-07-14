@@ -1,20 +1,20 @@
 import { useCallback } from "react";
 import {
-  useCreateWindFleetWindEnergyUnitsWindTurbineFleetsPostMutation,
-  useDeleteWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteMutation,
-  useUpdateWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchMutation,
+  useCreateWindFleetApiWindEnergyUnitsWindTurbineFleetsPostMutation,
+  useDeleteWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteMutation,
+  useUpdateWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchMutation,
   type WindTurbineFleetDb,
 } from "../../shared/api/api";
 
 export const useCRUDForTurbine = () => {
   const [createTurbine, { isLoading: isCreating }] =
-    useCreateWindFleetWindEnergyUnitsWindTurbineFleetsPostMutation();
+    useCreateWindFleetApiWindEnergyUnitsWindTurbineFleetsPostMutation();
 
   const [updateTurbine, { isLoading: isUpdating }] =
-    useUpdateWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchMutation();
+    useUpdateWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdPatchMutation();
 
   const [removeTurbine, { isLoading: isDeleting }] =
-    useDeleteWindFleetWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteMutation();
+    useDeleteWindFleetApiWindEnergyUnitsWindTurbineFleetsWindFleetIdDeleteMutation();
 
   const saveTurbine = useCallback(
     async (data: WindTurbineFleetDb) => {

@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from "react";
 import {
-  useGetPowerCurvesWindEnergyUnitsPowerCurvesGetQuery,
-  useGetWindTurbinesWindEnergyUnitsWindTurbinesGetQuery,
+  useGetPowerCurvesApiWindEnergyUnitsPowerCurvesGetQuery,
+  useGetWindTurbinesApiWindEnergyUnitsWindTurbinesGetQuery,
   type PowerCurveDb,
   type WindTurbineDb,
 } from "../api/api";
@@ -24,12 +24,12 @@ export const ReferencesProvider: React.FC<{ children: React.ReactNode }> = ({
   const isLoginPage = location.pathname === appRoutes.login;
 
   const { data: turbines } =
-    useGetWindTurbinesWindEnergyUnitsWindTurbinesGetQuery(undefined, {
+    useGetWindTurbinesApiWindEnergyUnitsWindTurbinesGetQuery(undefined, {
       skip: isLoginPage,
     });
 
   const { data: powerCurves } =
-    useGetPowerCurvesWindEnergyUnitsPowerCurvesGetQuery(undefined, {
+    useGetPowerCurvesApiWindEnergyUnitsPowerCurvesGetQuery(undefined, {
       skip: isLoginPage,
     });
 
