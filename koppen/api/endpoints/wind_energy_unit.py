@@ -261,13 +261,14 @@ async def create_forecast(
     if not wind_farm_obj:
         raise HTTPException(status_code=404, detail="Wind farm not found")
 
-    # Here you would implement the logic to create a forecast
-    # For now, we just return a placeholder response
-    return {
-        "message": "Forecast creation is not yet implemented",
-        "wind_farm_id": wind_farm_id,
-        "forecast_data": wind_farm_forecast.model_dump(),
-    }
+    new_forecast = Forecast(wind_farm_id=wind_farm_id, **wind_farm_forecast.dict())
+
+    # Save to database
+    session.add(new_forecast)
+    await session.commit()
+    await session.refresh(new_forecast)
+
+    return new_forecast
 
 
 @router.get("/wind_farms/{wind_farm_id}/forecasts")

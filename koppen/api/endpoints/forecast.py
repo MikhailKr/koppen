@@ -50,6 +50,7 @@ async def download_forecast_csv(
 @router.get("/history/{wind_farm_id}", response_model=list[ForecastHistoryDB])
 async def get_forecast_history(
     wind_farm_id: int,
+    forecast_id: int | None = None,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -60,6 +61,8 @@ async def get_forecast_history(
         .where(ForecastHistory.wind_farm_id == wind_farm_id)
         .order_by(ForecastHistory.generated_at.desc())
     )
+    if forecast_id is not None:
+        stmt = stmt.where(ForecastHistory.forecast_id == forecast_id)
     result = await session.execute(stmt)
     history_records = result.scalars().all()
 
