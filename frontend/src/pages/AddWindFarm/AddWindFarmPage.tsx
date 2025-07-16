@@ -1,16 +1,11 @@
 import { useEffect, useState, type FC } from "react";
 import WindFarmForm from "../../features/WindFarmForm/WindFarmForm";
-import {
-  Paper,
-  Backdrop,
-  CircularProgress,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import { Backdrop, CircularProgress, Snackbar, Alert } from "@mui/material";
 import type { WindFarmFormData } from "../../entities/WindFarm/WindFarm";
 import { useCreateFarm } from "../../entities/WindFarm/useCreateFarm";
 import { useNavigate } from "react-router-dom";
 import { appRoutes } from "../../app/appRoutes";
+import { PageContainerStyled } from "../../shared/widgets/SharedStyles";
 
 const newWindFarm: WindFarmFormData = {
   id: `new`,
@@ -19,7 +14,11 @@ const newWindFarm: WindFarmFormData = {
   longitude: 0,
   turbines: [],
   forecast: {
-    time_resolution: "minute",
+    name: "",
+    recipient: "",
+    horizon: "24 hours",
+    start_time: new Date(),
+    forecast_frequency: "daily",
   },
 };
 
@@ -61,12 +60,9 @@ export const AddWindFarmPage: FC = () => {
 
   return (
     <>
-      <Paper
-        elevation={3}
-        sx={{ maxWidth: 1280, margin: "24px auto", padding: 3 }}
-      >
+      <PageContainerStyled elevation={3}>
         <WindFarmForm windFarm={newWindFarm} onSubmit={handleFormSubmit} />
-      </Paper>
+      </PageContainerStyled>
 
       <Backdrop
         open={isLoading}

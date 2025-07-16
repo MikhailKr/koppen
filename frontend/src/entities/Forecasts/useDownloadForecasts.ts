@@ -1,45 +1,31 @@
-import { useCallback } from "react";
-import { useLazyForecastForecastWindFarmIdGetQuery } from "../../shared/api/api";
+import { useDownloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGetMutation } from "../../shared/api/api";
 
 export const useDownloadForecasts = () => {
-  const [trigger, { isFetching, error }] =
-    useLazyForecastForecastWindFarmIdGetQuery();
+  const [downloadCsv, { isLoading, error }] =
+    useDownloadForecastCsvApiForecastHistoryHistoryRecordIdDownloadCsvGetMutation();
 
-  const downloadForecast = useCallback(
-    async (windFarmId: number, windFarmName: string) => {
-      try {
-        const result = await trigger({ windFarmId }).unwrap();
+  const downloadForecast = async (
+    forecastName: string,
+    forecastDate: string,
+    historyRecordId: number,
+  ) => {
+    try {
+      const blob = await downloadCsv({ historyRecordId }).unwrap();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
 
-        if (!result?.power_output) {
-          console.warn("No data");
-          return;
-        }
+      // Альтернатива — парсить заголовок content-disposition (если вы его достаёте вручную)
+      a.download = `${forecastName}_${forecastDate}.csv`;
 
-        const rows = [["timestamp", "power_output"]];
-        for (const [timestamp, value] of Object.entries(result.power_output)) {
-          //@ts-ignore
-          rows.push([timestamp, value.toString()]);
-        }
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Error while trying to download forecast", e);
+    }
+  };
 
-        const csvContent = rows.map((r) => r.join(",")).join("\n");
-        const blob = new Blob([csvContent], {
-          type: "text/csv;charset=utf-8;",
-        });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", `forecast_${windFarmName}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(url);
-      } catch (e) {
-        console.error("Error while trying to download forecast", e);
-      }
-    },
-    [trigger],
-  );
-
-  return { downloadForecast, isFetching, error };
+  return { downloadForecast, isLoading, error };
 };

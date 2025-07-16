@@ -1,5 +1,5 @@
 import type { WindFarm } from "./WindFarm";
-import { useGetWindFarmsWindEnergyUnitsWindFarmsGetQuery } from "../../shared/api/api";
+import { useGetWindFarmsApiWindEnergyUnitsWindFarmsGetQuery } from "../../shared/api/api";
 
 const mapWindFarmListData = (data: any): WindFarm[] => {
   return data as WindFarm[];
@@ -11,7 +11,7 @@ export const useWindFarmsList = (): {
   isError: boolean;
 } => {
   const { isLoading, windFarms, isError } =
-    useGetWindFarmsWindEnergyUnitsWindFarmsGetQuery(undefined, {
+    useGetWindFarmsApiWindEnergyUnitsWindFarmsGetQuery(undefined, {
       refetchOnMountOrArgChange: true,
       selectFromResult: ({ data, isLoading, isError }) => ({
         windFarms: mapWindFarmListData(data),

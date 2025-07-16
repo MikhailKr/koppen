@@ -1,19 +1,33 @@
 import { useCallback } from "react";
 import {
-  useCreateForecastWindEnergyUnitsWindFarmsWindFarmIdForecastsPostMutation,
+  useCreateForecastApiWindEnergyUnitsWindFarmsWindFarmIdForecastsPostMutation,
   type ForecastDb,
 } from "../../shared/api/api";
+import type { WindFarmForecast } from "./WindFarm";
 
-// todo: удаление прогноза
+// todo:
+const mapForecast = (
+  windFarmId: number,
+  forecast: WindFarmForecast,
+): ForecastDb => {
+  return {
+    ...forecast,
+    granularity: "60 minutes",
+    start_time: forecast.start_time!.toTimeString().slice(0, 5),
+    wind_farm_id: windFarmId,
+    recipients: [forecast.recipient],
+  };
+};
+
 export const useCreateOrDeleteForecast = () => {
   const [createForecast, { isLoading: isCreating }] =
-    useCreateForecastWindEnergyUnitsWindFarmsWindFarmIdForecastsPostMutation();
+    useCreateForecastApiWindEnergyUnitsWindFarmsWindFarmIdForecastsPostMutation();
 
   const createForecastRequest = useCallback(
-    async (data: ForecastDb) => {
+    async (windFarmId: number, data: WindFarmForecast) => {
       await createForecast({
-        windFarmId: data.wind_farm_id,
-        windFarmForecastCreate: data,
+        windFarmId,
+        windFarmForecastCreate: mapForecast(windFarmId, data),
       }).unwrap();
     },
     [createForecast],

@@ -4,14 +4,18 @@ export interface WindTurbine {
   number: number;
 }
 
-export type TimeResolutionEnum = "minute" | "hour" | "day";
+export type GranularityEnum = "60 minutes" | "30 minutes" | "15 minutes";
+export type HorizonEnum = "3 hours" | "24 hours" | "48 hours" | "120 hours";
+export type ForecastFrequencyEnum = "daily" | "hourly";
 
 export type WindFarmForecast = {
-  time_resolution: TimeResolutionEnum;
-  repeat_daily?: boolean;
-  daily_time?: string | null;
-  repeat_hourly?: boolean;
-  hourly_minute?: number | null;
+  name: string;
+  granularity?: GranularityEnum;
+  horizon: HorizonEnum;
+  recipient: string;
+  start_time: Date;
+  forecast_frequency: ForecastFrequencyEnum;
+  enable?: boolean;
 };
 
 export interface WindFarmFormData {

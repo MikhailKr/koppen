@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useGetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetQuery } from "../../shared/api/api";
+import { useGetWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdGetQuery } from "../../shared/api/api";
 
 export function useWindFarmInfo(windFarmId: number) {
   const {
@@ -7,7 +7,9 @@ export function useWindFarmInfo(windFarmId: number) {
     isError,
     refetch,
     data: windFarm,
-  } = useGetWindFarmWindEnergyUnitsWindFarmsWindFarmIdGetQuery({ windFarmId });
+  } = useGetWindFarmApiWindEnergyUnitsWindFarmsWindFarmIdGetQuery({
+    windFarmId,
+  });
 
   const updateFarmInfo = useCallback(async () => {
     await refetch();

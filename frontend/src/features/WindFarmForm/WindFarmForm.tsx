@@ -7,20 +7,17 @@ import {
   Stepper,
   Step,
   StepLabel,
-  MenuItem,
   IconButton,
-  Select,
   FormControl,
-  InputLabel,
-  FormControlLabel,
-  Switch,
-  FormGroup,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import type { WindFarmFormData } from "../../entities/WindFarm/WindFarm";
 import Grid from "@mui/material/Grid";
 import { WindTurbineSelect } from "../../shared/widgets/WindTurbineSelect/WindTurbineSelect";
+import { ForecastHorizonToggle } from "../../shared/widgets/ForecastProps/ForecastHorizionToggle";
+import { ForecastDeliveryTimePicker } from "../../shared/widgets/ForecastProps/ForecastDeliveryTimePicker";
+import { ForecastDeliveryFrequencyPicker } from "../../shared/widgets/ForecastProps/ForecastDeliveryFrequencyPicker";
 
 interface Props {
   windFarm: WindFarmFormData;
@@ -29,12 +26,6 @@ interface Props {
 }
 
 const steps = ["Create a new wind farm", "Create a new forecast model"];
-
-const TIME_RESOLUTIONS = [
-  { label: "Minute", value: "minute" },
-  { label: "Hour", value: "hour" },
-  { label: "Day", value: "day" },
-];
 
 const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
   const [activeStep, setActiveStep] = useState(0);
@@ -62,7 +53,7 @@ const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
   return (
     <>
       <Box justifyContent="center" sx={{ display: "flex" }}>
-        <Stepper activeStep={activeStep} sx={{ mb: 4, width: "70%" }}>
+        <Stepper activeStep={activeStep} sx={{ mb: 4, width: "90%" }}>
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -78,132 +69,136 @@ const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
               Step 1 of 2
             </Typography>
 
-            <Controller
-              name="name"
-              control={control}
-              rules={{ required: "Name is required" }}
-              render={({ field, fieldState }) => (
-                <TextField
-                  {...field}
-                  label="Name"
-                  fullWidth
-                  margin="normal"
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                />
-              )}
-            />
-
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Description (optional)"
-                  fullWidth
-                  multiline
-                  rows={3}
-                  margin="normal"
-                />
-              )}
-            />
-
-            <Grid container spacing={2}>
-              <Grid size={6}>
-                <Controller
-                  name="latitude"
-                  control={control}
-                  rules={{ required: "Latitude is required" }}
-                  render={({ field, fieldState }) => (
-                    <TextField
-                      {...field}
-                      label="Latitude"
-                      type="number"
-                      fullWidth
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid size={6}>
-                <Controller
-                  name="longitude"
-                  control={control}
-                  rules={{ required: "Longitude is required" }}
-                  render={({ field, fieldState }) => (
-                    <TextField
-                      {...field}
-                      label="Longitude"
-                      type="number"
-                      fullWidth
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
-
-            {turbines.map((item, index) => (
-              <Grid
-                container
-                spacing={2}
-                mt={2}
-                key={item.id}
-                alignItems="center"
-              >
-                <Grid size={5}>
-                  <Controller
-                    name={`turbines.${index}.modelId`}
-                    control={control}
-                    rules={{ required: "Model is required" }}
-                    render={({ field, fieldState }) => (
-                      <WindTurbineSelect
-                        isError={!!fieldState.error}
-                        onChange={(turbine) => field.onChange(turbine.id)}
-                        value={field.value}
-                        index={index}
-                      />
-                    )}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "25px" }}>
+              <Controller
+                name="name"
+                control={control}
+                rules={{ required: "Name is required" }}
+                render={({ field, fieldState }) => (
+                  <TextField
+                    {...field}
+                    label="Name"
+                    fullWidth
+                    margin="normal"
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
                   />
-                </Grid>
+                )}
+              />
 
-                <Grid size={5}>
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Description (optional)"
+                    fullWidth
+                    multiline
+                    rows={2}
+                    margin="normal"
+                  />
+                )}
+              />
+
+              <Grid container spacing={2}>
+                <Grid size={6}>
                   <Controller
-                    name={`turbines.${index}.number`}
+                    name="latitude"
                     control={control}
-                    rules={{ required: "Number is required" }}
+                    rules={{ required: "Latitude is required" }}
                     render={({ field, fieldState }) => (
                       <TextField
                         {...field}
-                        label="Number"
-                        fullWidth
+                        label="Latitude"
                         type="number"
+                        fullWidth
                         error={!!fieldState.error}
                         helperText={fieldState.error?.message}
                       />
                     )}
                   />
                 </Grid>
-
-                <Grid size={2}>
-                  <IconButton onClick={() => remove(index)}>
-                    <DeleteIcon color="error" />
-                  </IconButton>
+                <Grid size={6}>
+                  <Controller
+                    name="longitude"
+                    control={control}
+                    rules={{ required: "Longitude is required" }}
+                    render={({ field, fieldState }) => (
+                      <TextField
+                        {...field}
+                        label="Longitude"
+                        type="number"
+                        fullWidth
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                      />
+                    )}
+                  />
                 </Grid>
               </Grid>
-            ))}
 
-            {/* Кнопка добавления */}
-            <Button
-              onClick={() => append({ modelId: -1, modelName: "", number: 0 })}
-              sx={{ mt: 2 }}
-            >
-              Add Wind Turbine
-            </Button>
+              {turbines.map((item, index) => (
+                <Grid
+                  container
+                  spacing={2}
+                  mt={2}
+                  key={item.id}
+                  alignItems="center"
+                >
+                  <Grid size={5}>
+                    <Controller
+                      name={`turbines.${index}.modelId`}
+                      control={control}
+                      rules={{ required: "Model is required" }}
+                      render={({ field, fieldState }) => (
+                        <WindTurbineSelect
+                          isError={!!fieldState.error}
+                          onChange={(turbine) => field.onChange(turbine.id)}
+                          value={field.value}
+                          index={index}
+                        />
+                      )}
+                    />
+                  </Grid>
 
+                  <Grid size={5}>
+                    <Controller
+                      name={`turbines.${index}.number`}
+                      control={control}
+                      rules={{ required: "Number is required" }}
+                      render={({ field, fieldState }) => (
+                        <TextField
+                          {...field}
+                          label="Number"
+                          fullWidth
+                          type="number"
+                          error={!!fieldState.error}
+                          helperText={fieldState.error?.message}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid size={2}>
+                    <IconButton onClick={() => remove(index)}>
+                      <DeleteIcon color="error" />
+                    </IconButton>
+                  </Grid>
+                </Grid>
+              ))}
+
+              <Box>
+                <Button
+                  onClick={() =>
+                    append({ modelId: -1, modelName: "", number: 0 })
+                  }
+                  sx={{ mt: 2 }}
+                >
+                  Add Wind Turbine
+                </Button>
+              </Box>
+            </Box>
             <Box mt={4}>
               <Button variant="contained" color="error" onClick={handleNext}>
                 Next
@@ -217,87 +212,81 @@ const WindFarmForm: React.FC<Props> = ({ windFarm, onSubmit }) => {
             <Typography variant="h6" gutterBottom>
               Step 2 of 2
             </Typography>
-
-            <Controller
-              name="forecast.time_resolution"
-              control={control}
-              rules={{ required: "Time resolution is required" }}
-              render={({ field, fieldState }) => (
-                <FormControl
-                  fullWidth
-                  margin="normal"
-                  error={!!fieldState.error}
-                >
-                  <InputLabel>Time resolution</InputLabel>
-                  <Select
-                    {...field}
-                    label="Time resolution"
-                    value={field.value || ""}
-                    onChange={(e) => field.onChange(e.target.value)}
-                  >
-                    <MenuItem value="">
-                      <em>Select resolution</em>
-                    </MenuItem>
-                    {TIME_RESOLUTIONS.map((opt) => (
-                      <MenuItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-            />
-
-            <Controller
-              name="forecast.repeat_daily"
-              control={control}
-              render={({ field }) => (
-                <FormGroup sx={{ mt: 2 }}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={!!field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                      />
-                    }
-                    label="Repeat Daily"
-                  />
-                </FormGroup>
-              )}
-            />
-
-            <Controller
-              name="forecast.repeat_hourly"
-              control={control}
-              render={({ field }) => (
-                <FormGroup sx={{ mt: 2 }}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={!!field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                      />
-                    }
-                    label="Repeat Hourly"
-                  />
-                </FormGroup>
-              )}
-            />
-
-            <Controller
-              name="forecast.hourly_minute"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Hourly Minute"
-                  type="number"
-                  fullWidth
-                  margin="normal"
-                  InputProps={{ inputProps: { min: 0, max: 59 } }}
+            <Grid container spacing={4}>
+              <Grid size={12}>
+                <Controller
+                  name="forecast.name"
+                  control={control}
+                  rules={{ required: "Name is required" }}
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      {...field}
+                      label="Name"
+                      fullWidth
+                      margin="normal"
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                    />
+                  )}
                 />
-              )}
-            />
+              </Grid>
+
+              <Grid size={12}>
+                <Controller
+                  name="forecast.horizon"
+                  control={control}
+                  defaultValue="3 hours"
+                  render={({ field, fieldState }) => (
+                    <ForecastHorizonToggle
+                      isError={!!fieldState.error}
+                      onChange={field.onChange}
+                      value={field.value}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid size={6}>
+                <Controller
+                  name="forecast.forecast_frequency"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <ForecastDeliveryFrequencyPicker
+                      isError={!!fieldState.error}
+                      {...field}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid size={6}>
+                <Controller
+                  name="forecast.start_time"
+                  control={control}
+                  render={({ field }) => (
+                    <ForecastDeliveryTimePicker {...field} />
+                  )}
+                />
+              </Grid>
+
+              <Grid size={12}>
+                <Controller
+                  name="forecast.recipient"
+                  control={control}
+                  rules={{ required: "Email is required" }}
+                  render={({ field, fieldState }) => (
+                    <FormControl fullWidth error={!!fieldState.error}>
+                      <TextField
+                        {...field}
+                        placeholder="example@email.com"
+                        label="Email address for forecast delivery"
+                        type="email"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </FormControl>
+                  )}
+                />
+              </Grid>
+            </Grid>
 
             <Box mt={4} display="flex" justifyContent="space-between">
               <Button onClick={handleBack}>Back</Button>

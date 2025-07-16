@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { WindFarmFormData } from "./WindFarm";
 import {
-  useCreateWindFarmWindEnergyUnitsWindFarmsPostMutation,
+  useCreateWindFarmApiWindEnergyUnitsWindFarmsPostMutation,
   type WindFarmCreate,
 } from "../../shared/api/api";
 
@@ -14,7 +14,13 @@ const mapFormDataToWindFarmContract = (
     longitude: windFarmData.longitude,
     latitude: windFarmData.latitude,
   },
-  forecasts: [windFarmData.forecast],
+  forecasts: [
+    {
+      ...windFarmData.forecast,
+      recipients: [windFarmData.forecast.recipient],
+      start_time: windFarmData.forecast.start_time?.toTimeString().slice(0, 5),
+    },
+  ],
   wind_turbine_fleet: windFarmData.turbines.map((x) => ({
     wind_turbine_id: x.modelId,
     number_of_turbines: x.number,
@@ -41,7 +47,7 @@ export function useCreateFarm(): useCreateFarmResult {
   const [error, setError] = useState<CreateError | null>(null);
 
   const [createWindFarmRequest] =
-    useCreateWindFarmWindEnergyUnitsWindFarmsPostMutation();
+    useCreateWindFarmApiWindEnergyUnitsWindFarmsPostMutation();
 
   const createWindFarm = async (
     windFarmData: WindFarmFormData,

@@ -80,7 +80,6 @@ const WindFarmTurbines: React.FC<Props> = ({ fleets, onUpdate }) => {
               key={fleet.id}
               justifyContent="space-between"
               alignItems="center"
-              sx={{ mb: 2, p: 1, border: "1px solid #eee", borderRadius: 1 }}
             >
               <Box>
                 <Typography>

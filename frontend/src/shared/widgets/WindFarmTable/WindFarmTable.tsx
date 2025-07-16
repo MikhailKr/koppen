@@ -9,7 +9,6 @@ import {
   TableCell,
   TableBody,
   IconButton,
-  Button,
   Typography,
 } from "@mui/material";
 import { useWindFarmsList } from "../../../entities/WindFarms/useWindFarmsList";
@@ -47,15 +46,7 @@ export const WindFarmTable: FC = () => {
               <TableCell>Name</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>Location</TableCell>
-              <TableCell align="right">
-                <Button
-                  type="button"
-                  variant="contained"
-                  onClick={() => navigate(appRoutes.farmAdd)}
-                >
-                  Add new farm
-                </Button>
-              </TableCell>
+              <TableCell align="right"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

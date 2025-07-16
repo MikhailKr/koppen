@@ -8,12 +8,13 @@ import {
 import { LoginPage } from "../pages/Login/LoginPage";
 import MainPage from "../pages/Main/MainPage";
 import { appRoutes } from "./appRoutes";
-import Header from "../shared/widgets/Header/Header";
 import { AddWindFarmPage } from "../pages/AddWindFarm/AddWindFarmPage";
 import { WindFarmInfoPage } from "../pages/FarmInfo/WindFarmInfoPage";
 import { AppProvider } from "../shared/contexts/AppProviderContext";
 import { Background } from "../shared/widgets/Background/Background";
 import { useAuth } from "../shared/contexts/AuthContext";
+import { ForecastsPage } from "../pages/Forecasts/ForecastsPage";
+import Sidebar from "../shared/widgets/Sidebar/Sidebar";
 
 const FallbackRedirect: React.FC = () => {
   const { user } = useAuth();
@@ -26,7 +27,7 @@ const App: React.FC = () => {
     <Router>
       <AppProvider>
         <Background>
-          <Header />
+          <Sidebar />
 
           <Routes>
             <Route path={appRoutes.login} element={<LoginPage />} />
@@ -38,6 +39,8 @@ const App: React.FC = () => {
             <Route path={appRoutes.farmView} element={<WindFarmInfoPage />} />
 
             <Route path={appRoutes.farmView} element={<WindFarmInfoPage />} />
+
+            <Route path={appRoutes.forecast} element={<ForecastsPage />} />
 
             <Route path="*" element={<FallbackRedirect />} />
           </Routes>
