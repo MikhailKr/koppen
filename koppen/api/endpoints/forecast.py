@@ -54,7 +54,7 @@ async def get_forecast_history(
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Get the history of forecasts for a specific wind farm.
+    Get the history of forecasts for a specific wind farm and optionally filter by forecast ID.
     """
     stmt = (
         select(ForecastHistory)
