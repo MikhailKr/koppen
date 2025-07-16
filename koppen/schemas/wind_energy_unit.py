@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import time
-from models.forecast import TimeResolutionEnum
+
+from models.forecast import ForecastFrequencyEnum, GranularityEnum, HorizonEnum
 
 
 class LocationDB(BaseModel):
@@ -31,11 +32,13 @@ class LocationCreate(BaseModel):
 
 
 class WindFarmForecastCreate(BaseModel):
-    time_resolution: TimeResolutionEnum
-    repeat_daily: bool = False
-    daily_time: time | None = None
-    repeat_hourly: bool = False
-    hourly_minute: int | None = None
+    name: str
+    granularity: GranularityEnum = GranularityEnum.minutes_60
+    horizon: HorizonEnum = HorizonEnum.hour_120
+    recipients: list[str] = []
+    start_time: time | None = None
+    forecast_frequency: ForecastFrequencyEnum = ForecastFrequencyEnum.hourly
+    enable: bool = True
 
     class Config:
         orm_mode = True
@@ -56,11 +59,15 @@ class WindFarmCreate(BaseModel):
 
 
 class ForecastDB(BaseModel):
-    time_resolution: TimeResolutionEnum
-    repeat_daily: bool = False
-    daily_time: time | None = None
-    repeat_hourly: bool = False
-    hourly_minute: int | None = None
+    # time_resolution: TimeResolutionEnum
+    name: str
+    granularity: GranularityEnum
+    horizon: HorizonEnum
+    recipients: list[str]
+    start_time: time | None
+    forecast_frequency: ForecastFrequencyEnum
+    enable: bool = True
+
     wind_farm_id: int
 
     class Config:

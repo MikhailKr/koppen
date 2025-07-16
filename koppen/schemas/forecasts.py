@@ -30,3 +30,12 @@ class WeatherResponse(BaseModel):
     elevation: float
     hourly_units: HourlyUnits
     hourly: HourlyData
+
+
+class ForecastHistoryDB(BaseModel):
+    id: int
+    forecast_id: int
+    generated_at: datetime
+
+    class Config:
+        orm_mode = True

@@ -1,8 +1,22 @@
+from email.mime.text import MIMEText
+import aiosmtplib
 from celery import Celery
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import asyncio
-from utils.email_utils import send_email_async
+from sqlalchemy.orm import selectinload
+
+from sqlalchemy import and_, extract, or_
+
+from sqlalchemy import select
+import pandas as pd
+from core.db import AsyncSessionLocal
+from forecasting.service import WindFarmForecastService
+from models.forecast import Forecast, ForecastFrequencyEnum, ForecastHistory
+from utils.email_utils import FROM_EMAIL, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USER
+import io
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
 
 # Set the broker URL (use Redis)
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0")
@@ -45,50 +59,230 @@ def print_time():
     return now
 
 
-def send_scheduled_forecasts_via_email():
-    # This function would contain the logic to send scheduled forecasts via email.
-    # For now, it just prints a message.
-    print("Sending scheduled forecasts via email...")
-
-
 @celery_app.task(name="celery_app.send_scheduled_forecasts")
 def send_scheduled_forecasts():
     """Celery periodic task to send scheduled forecasts via email."""
     print("Starting scheduled forecasts task...")
-    asyncio.run(_send_scheduled_forecasts_async())
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(_send_scheduled_forecasts_async())
+    except Exception as e:
+        print(f"Error in scheduled forecasts task: {str(e)}")
+        raise
+    finally:
+        loop.close()
+
+
+celery_app.conf.beat_schedule["send_scheduled_forecasts"] = {
+    "task": "celery_app.send_scheduled_forecasts",
+    "schedule": 60.0,
+}
 
 
 async def _send_scheduled_forecasts_async():
-    # async with AsyncSessionLocal() as session:
-    # now = datetime.utcnow()
-    await send_email_async(
-        "mikhailkr5@gmail.com", "test", "This is a test email from Koppen."
-    )
-    # forecasts = (await session.execute(select(Forecast))).scalars().all()
-    # for forecast in forecasts:
-    #     # Check if it's time to send (daily or hourly)
-    #     should_send = False
-    #     if forecast.repeat_daily and forecast.daily_time:
-    #         if now.time().hour == forecast.daily_time.hour and now.time().minute == forecast.daily_time.minute:
-    #             should_send = True
-    #     if forecast.repeat_hourly and forecast.hourly_minute is not None:
-    #         if now.time().minute == forecast.hourly_minute:
-    #             should_send = True
-    #     if not should_send:
-    #         continue
-    #     # Get wind farm and user
-    #     wind_farm = await session.get(WindFarm, forecast.wind_farm_id)
-    #     user = await session.get(User, wind_farm.user_id)
-    #     # Calculate forecast
-    #     forecast_data = await calculate_forecast(session, wind_farm.id)
-    #     # Send email
-    #     subject = f"Forecast for {wind_farm.name}"
-    #     body = f"Forecast data: {forecast_data}"
-    #     await send_email_async(user.email, subject, body)
+    """Send forecast emails for all scheduled forecasts to their recipients."""
+    async with AsyncSessionLocal() as session:
+        try:
+            # 0. Get all active scheduled forecasts with all needed relationships
+            now = datetime.utcnow()
+            current_time = now.time()
+            current_minute = now.minute
+            one_minute_ago = (now - timedelta(minutes=1)).time()
+
+            # Query forecasts with all needed relationships loaded
+            scheduled_forecasts = await session.execute(
+                select(Forecast)
+                .options(
+                    selectinload(Forecast.wind_farm),  # Ensure recipients are loaded
+                )
+                .where(
+                    or_(
+                        and_(
+                            Forecast.enable == True,  # noqa: E712
+                            Forecast.start_time <= current_time,
+                            Forecast.start_time > one_minute_ago,
+                        ),
+                        and_(
+                            Forecast.forecast_frequency == ForecastFrequencyEnum.hourly,  # noqa: E712
+                            extract("minute", Forecast.start_time) == current_minute,
+                        ),
+                    )
+                )
+            )
+
+            forecasts = scheduled_forecasts.scalars().all()
+
+            if not forecasts:
+                print("No scheduled forecasts to send at this time")
+                return
+
+            # Process each forecast
+            for forecast in forecasts:
+                try:
+                    # Skip if no recipients (now we can access this directly)
+                    if not forecast.recipients:
+                        print(f"No recipients configured for forecast {forecast.id}")
+                        continue
+
+                    print(
+                        f"Processing forecast {forecast.id} for wind farm {forecast.wind_farm_id}"
+                    )
+
+                    # Get forecast data
+                    service = WindFarmForecastService(session)
+                    forecast_data = await service.calculate_forecast(
+                        forecast.wind_farm_id
+                    )
+
+                    if not forecast_data or "power_output" not in forecast_data:
+                        print(
+                            f"Invalid forecast data for wind farm {forecast.wind_farm_id}"
+                        )
+                        continue
+
+                    # Format email content
+                    email_subject = f"{forecast.wind_farm.name} Power Forecast Report"
+                    email_body = format_forecast_email(forecast_data)
+
+                    # Create CSV attachment
+                    csv_buffer = generate_series_csv(forecast_data["power_output"])
+
+                    # Save CSV to database
+                    try:
+                        history_record = ForecastHistory(
+                            forecast_id=forecast.id,
+                            generated_at=datetime.utcnow(),
+                            csv_data=csv_buffer.getvalue(),
+                            wind_farm_id=forecast.wind_farm_id,
+                        )
+                        session.add(history_record)
+                        await session.flush()
+                        print(f"Saved forecast history for forecast {forecast.id}")
+                    except Exception as db_error:
+                        await session.rollback()
+                        print(f"Failed to save forecast history: {str(db_error)}")
+                        continue  # Skip this forecast if we can't save history
+
+                    # Send to each recipient
+                    for recipient in forecast.recipients:
+                        try:
+                            message = MIMEMultipart()
+                            message["From"] = FROM_EMAIL
+                            message["To"] = recipient
+                            message["Subject"] = email_subject
+
+                            message.attach(MIMEText(email_body, "html"))
+
+                            csv_attachment = MIMEApplication(
+                                csv_buffer.getvalue(),
+                                Name=f"{forecast.wind_farm.name}_forecast.csv",
+                            )
+                            csv_attachment["Content-Disposition"] = (
+                                f'attachment; filename="{forecast.wind_farm.name}_forecast.csv"'
+                            )
+                            message.attach(csv_attachment)
+
+                            await aiosmtplib.send(
+                                message,
+                                hostname=SMTP_HOST,
+                                port=SMTP_PORT,
+                                username=SMTP_USER,
+                                password=SMTP_PASSWORD,
+                                start_tls=True,
+                            )
+                            print(f"Sent forecast to {recipient}")
+
+                        except Exception as email_error:
+                            print(f"Failed to send to {recipient}: {str(email_error)}")
+                            continue
+
+                except Exception as forecast_error:
+                    print(
+                        f"Error processing forecast {forecast.id}: {str(forecast_error)}"
+                    )
+                    continue
+
+            await session.commit()
+
+        except Exception as e:
+            await session.rollback()
+            print(f"Error in forecast processing: {str(e)}")
+            raise
 
 
-# Add to beat_schedule
-celery_app.conf.beat_schedule["send_scheduled_forecasts"] = {
-    "task": "celery_app.send_scheduled_forecasts",
-    "schedule": 60.0,  # every minute
-}
+def generate_series_csv(power_series) -> io.StringIO:
+    """Generate CSV from pandas Series power data."""
+    csv_buffer = io.StringIO()
+
+    df = power_series.to_frame(name="Power Output (W)")
+    df.index.name = "Timestamp"
+
+    df.to_csv(csv_buffer)
+    csv_buffer.seek(0)
+    return csv_buffer
+
+
+def format_forecast_email(forecast_data: dict) -> str:
+    """Format pandas Series forecast data into HTML email."""
+    power_series = forecast_data["power_output"]
+
+    if not isinstance(power_series.index, pd.DatetimeIndex):
+        try:
+            power_series.index = pd.to_datetime(power_series.index)
+        except:  # noqa: E722
+            power_series.index = pd.RangeIndex(start=0, stop=len(power_series), step=1)
+
+    power_kw = power_series / 1000
+    max_power = power_kw.max()
+    avg_power = power_kw.mean()
+    total_energy = power_kw.sum()  # kWh equivalent for 1h resolution
+
+    sample_data = power_kw.head(6) if len(power_kw) > 6 else power_kw
+
+    table_rows = []
+    for timestamp, power in sample_data.items():
+        if isinstance(timestamp, pd.Timestamp):
+            time_str = timestamp.strftime("%Y-%m-%d %H:%M UTC")
+        else:
+            time_str = str(timestamp)
+
+        table_rows.append(f"""
+        <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">{time_str}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">{power:.2f}</td>
+        </tr>
+        """)
+
+    return f"""
+    <html>
+    <body style="font-family: Arial, sans-serif;">
+        <h2>Wind Farm Power Forecast</h2>
+        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0;">Summary</h3>
+            <p><strong>Time Period:</strong> {power_series.index[0]} to {power_series.index[-1]}</p>
+            <p><strong>Maximum Power:</strong> {max_power:.2f} kW</p>
+            <p><strong>Average Power:</strong> {avg_power:.2f} kW</p>
+            <p><strong>Total Energy:</strong> {total_energy:.1f} kWh</p>
+        </div>
+        
+        <h3>Sample Data (full data in attached CSV)</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #f5f5f5;">
+                    <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Timestamp</th>
+                    <th style="padding: 8px; text-align: right; border-bottom: 1px solid #ddd;">Power (kW)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {"".join(table_rows)}
+                {f'<tr><td colspan="2" style="padding: 8px; text-align: center; font-style: italic;">... {len(power_series) - 6} more records in attached CSV ...</td></tr>' if len(power_series) > 6 else ""}
+            </tbody>
+        </table>
+        
+        <p style="margin-top: 20px; color: #666; font-size: 0.9em;">
+            Generated at: {pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S %Z")}
+        </p>
+    </body>
+    </html>
+    """

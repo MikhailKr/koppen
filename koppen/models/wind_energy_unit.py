@@ -25,6 +25,7 @@ class WindFarm(Base):
     forecasts = relationship(
         "Forecast", back_populates="wind_farm", cascade="all, delete-orphan"
     )
+    history_records = relationship("ForecastHistory", back_populates="wind_farm")
 
     def __str__(self):
         return (

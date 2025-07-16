@@ -1,134 +1,92 @@
-from io import StringIO
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import StreamingResponse
-from sqlalchemy import select
+# services/wind_farm_forecast.py
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from api_clients.open_meteo import OpenMeteoAsyncClient
-from core.db import get_async_session
-from core.auth import get_current_user
-from models.forecast import ForecastHistory
-from models.wind_energy_unit import WindFarm, WindTurbineFleet, WindTurbine
-from schemas.forecasts import ForecastHistoryDB, WeatherResponse
 from sqlalchemy.orm import selectinload
 import pandas as pd
+from windpowerlib import WindTurbine as WindTurbineWPL, WindFarm as WindFarmWPL
+from sqlalchemy import select
+
+from api_clients.open_meteo import OpenMeteoAsyncClient
+from models.wind_energy_unit import WindFarm, WindTurbineFleet, WindTurbine
+from schemas.forecasts import WeatherResponse
 import re
-from windpowerlib import WindTurbine as WindTurbineWPL
-from windpowerlib import WindFarm as WindFarmWPL
 from windpowerlib import ModelChain, TurbineClusterModelChain
 
-router = APIRouter(dependencies=[Depends(get_current_user)])
 
+class WindFarmForecastService:
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
-@router.get("/history/{history_record_id}/download-csv")
-async def download_forecast_csv(
-    history_record_id: int,
-    session: AsyncSession = Depends(get_async_session),
-):
-    # Get the history record
-    result = await session.execute(
-        select(ForecastHistory).where(ForecastHistory.id == history_record_id)
-    )
-    history = result.scalars().first()
-
-    if not history:
-        raise HTTPException(status_code=404, detail="History record not found")
-
-    # Create a file-like object from the CSV text
-    csv_file = StringIO(history.csv_data)
-
-    # Return as a downloadable file
-    return StreamingResponse(
-        csv_file,
-        media_type="text/csv",
-        headers={
-            "Content-Disposition": f"attachment; filename=forecast_{history.id}_{history.generated_at.date()}.csv"
-        },
-    )
-
-
-@router.get("/history/{wind_farm_id}", response_model=list[ForecastHistoryDB])
-async def get_forecast_history(
-    wind_farm_id: int,
-    session: AsyncSession = Depends(get_async_session),
-):
-    """
-    Get the history of forecasts for a specific wind farm.
-    """
-    stmt = (
-        select(ForecastHistory)
-        .where(ForecastHistory.wind_farm_id == wind_farm_id)
-        .order_by(ForecastHistory.generated_at.desc())
-    )
-    result = await session.execute(stmt)
-    history_records = result.scalars().all()
-
-    return history_records
-
-
-@router.get("/{wind_farm_id}")
-async def forecast(
-    wind_farm_id: int,
-    # forecast_params: ForecastParams,
-    session: AsyncSession = Depends(get_async_session),
-):
-    """
-    Steps:
-        1. Get weather forecast for the location
-        2. Get wind_farm model
-        3. Get power output forecast
-        4. Return forecast as a dict
-    """
-    # TODO add check that user is the owner of the wind farm
-    stmt = (
-        select(WindFarm)
-        .options(
-            selectinload(WindFarm.location),
-            selectinload(WindFarm.wind_turbine_fleet)
-            .selectinload(WindTurbineFleet.wind_turbine)
-            .selectinload(WindTurbine.power_curve),
+    async def get_wind_farm_with_details(self, wind_farm_id: int) -> Optional[WindFarm]:
+        """Get wind farm with all related data."""
+        stmt = (
+            select(WindFarm)
+            .options(
+                selectinload(WindFarm.location),
+                selectinload(WindFarm.wind_turbine_fleet)
+                .selectinload(WindTurbineFleet.wind_turbine)
+                .selectinload(WindTurbine.power_curve),
+            )
+            .where(WindFarm.id == wind_farm_id)
         )
-        .where(WindFarm.id == wind_farm_id)
-    )
-    result = await session.execute(stmt)
-    wind_farm_obj = result.scalars().first()
-    turbines_data = []
-    # power_curve = []
-    for fleet in wind_farm_obj.wind_turbine_fleet:
-        wind_turbine: WindTurbine = fleet.wind_turbine
+        result = await self.session.execute(stmt)
+        return result.scalars().first()
+
+    def _create_turbine_data(self, wind_turbine: WindTurbine) -> dict:
+        """Create turbine data dictionary for windpowerlib."""
         ws, pc = [], []
         for wind_speed, power in wind_turbine.power_curve.wind_speed_value_map.items():
             ws.append(float(wind_speed))
             pc.append(power * 1000)
 
-        power_curve = {}
-        power_curve["wind_speed"] = ws
-        power_curve["value"] = pc
-
-        data = {
+        return {
             "nominal_power": wind_turbine.nominal_power,
             "hub_height": wind_turbine.hub_height,
-            "power_curve": pd.DataFrame(data=power_curve),
+            "power_curve": pd.DataFrame({"wind_speed": ws, "value": pc}),
         }
-        turbines_data.append(data)
-    turbine = turbines_data[0]
-    my_turbine = WindTurbineWPL(**turbine)
-    wind_turbine_fleet = pd.DataFrame(
-        {
-            "wind_turbine": [my_turbine],  # as windpowerlib.WindTurbine
-            "number_of_turbines": [84],
-        }
-    )
-    wind_farm = WindFarmWPL(
-        name="example_farm", wind_turbine_fleet=wind_turbine_fleet, efficiency=0.9
-    )
 
-    latitude = wind_farm_obj.location.latitude
-    longitude = wind_farm_obj.location.longitude
-    weather_model = await _get_weather_forecast(latitude, longitude)
-    weather_data = await _preprocess_weather_data(weather_model)
-    power_output = await get_wind_farm_power_output(wind_farm, weather_data)
-    return {"power_output": power_output}
+    def _create_wind_farm_model(
+        self, turbines_data: list, number_of_turbines: int
+    ) -> WindFarmWPL:
+        """Create windpowerlib wind farm model."""
+        turbines = [WindTurbineWPL(**data) for data in turbines_data]
+
+        wind_turbine_fleet = pd.DataFrame(
+            {
+                "wind_turbine": turbines,
+                "number_of_turbines": [number_of_turbines] * len(turbines),
+            }
+        )
+
+        return WindFarmWPL(
+            name="wind_farm_model",
+            wind_turbine_fleet=wind_turbine_fleet,
+            efficiency=0.9,
+        )
+
+    async def calculate_forecast(self, wind_farm_id: int) -> dict:
+        """Calculate power forecast for a wind farm."""
+        wind_farm_obj = await self.get_wind_farm_with_details(wind_farm_id)
+        if not wind_farm_obj:
+            raise ValueError(f"Wind farm with ID {wind_farm_id} not found")
+
+        turbines_data = []
+        for fleet in wind_farm_obj.wind_turbine_fleet:
+            turbine_data = self._create_turbine_data(fleet.wind_turbine)
+            turbines_data.append(turbine_data)
+
+        wind_farm = self._create_wind_farm_model(
+            turbines_data,
+            number_of_turbines=84,  # Could be configurable
+        )
+
+        weather_model = await _get_weather_forecast(
+            wind_farm_obj.location.latitude, wind_farm_obj.location.longitude
+        )
+        weather_data = await _preprocess_weather_data(weather_model)
+        power_output = await get_wind_farm_power_output(wind_farm, weather_data)
+
+        return {"power_output": power_output}
 
 
 async def _get_weather_forecast(latitude: float, longitude: float) -> WeatherResponse:

@@ -8,3 +8,5 @@ Useful commands:
 4. alembic history -v (Alembic выводит историю миграций)
 
 
+
+

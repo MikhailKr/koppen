@@ -5,13 +5,187 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: unless-stopped
     ports:
-      - "8000:8000"
-    volumes:
-      - .:/app
+      - "80:8000"
     environment:
-      - ENVIRONMENT=development
+      # - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/koppen
+      - ENVIRONMENT=production
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_USER=${SMTP_USER}
+    # depends_on:
+    #   - db
+  # redis:
+  #   image: redis:7
+  #   ports:
+  #     - "6379:6379"
+  #   restart: always
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 20
+  # celery_worker:
+  #   image: cr.yandex/crpdcq8rd3suju9jjn8k/koppen:latest
+  #   command: celery -A celery_app.celery_app worker --loglevel=info
+  #   depends_on:
+  #     redis:
+  #       condition: service_healthy
+  #   environment:
+  #     - ENVIRONMENT=production
+  #     - SMTP_PASSWORD=${SMTP_PASSWORD}
+  #     - SMTP_USER=${SMTP_USER}
+
+  # celery_beat:
+  #   image: cr.yandex/crpdcq8rd3suju9jjn8k/koppen:latest
+  #   command: celery -A celery_app.celery_app beat --loglevel=info
+  #   depends_on:
+  #     redis:
+  #       condition: service_healthy
+  #   environment:
+  #     - ENVIRONMENT=production
+  #     - SMTP_PASSWORD=${SMTP_PASSWORD}
+  #     - SMTP_USER=${SMTP_USER}
+      
+  # flower:
+  #   image: mher/flower:2.0
+  #   command: 
+  #     - celery
+  #     - flower
+  #     - --broker=redis://redis:6379/0
+  #     - --port=5555
+  #     - --broker_api=http://redis:6379
+  #     - --basic_auth=admin:admin
+  #   ports:
+  #     - "5555:5555"
+  #   depends_on:
+  #     redis:
+  #       condition: service_healthy
+  #   environment:
+  #     - CELERY_BROKER_URL=redis://redis:6379/0
+#     app:
+#       build: . 
+#       restart: unless-stopped
+#       ports:
+#         - "80:8000"
+#       environment:
+#         # - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/koppen
+#         - ENVIRONMENT=production
+# #   db:
+#     image: postgres:16-alpine
+#     restart: unless-stopped
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     environment:
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_PASSWORD=${DB_PASSWORD}
+#       - POSTGRES_DB=koppen
+#     expose:
+#       - "5432"
+
+# volumes:
+#   postgres_data:
+
+
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:8000"
+    volumes:
+      - ./koppen/fastapi.db:/app/fastapi.db  #
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:////app/fastapi.db
+      # - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/koppen
+      - ENVIRONMENT=production
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_USER=${SMTP_USER}
+    # depends_on:
+    #   - db
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./koppen/fastapi.db:/app/fastapi.db  # Mount shared volume to SQLite location
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A celery_app.celery_app worker --loglevel=info
+    volumes:
+      - ./koppen/fastapi.db:/app/fastapi.db  # 
     depends_on:
-      - db
+      redis:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:////app/fastapi.db
+      - ENVIRONMENT=production
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_USER=${SMTP_USER}
 
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A celery_app.celery_app beat --loglevel=info
+    volumes:
+      - ./koppen/fastapi.db:/app/fastapi.db  # 
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:////app/fastapi.db
+      - ENVIRONMENT=production
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_USER=${SMTP_USER}
+      
+  flower:
+    image: mher/flower:2.0
+    command: 
+      - celery
+      - flower
+      - --broker=redis://redis:6379/0
+      - --port=5555
+      - --broker_api=http://redis:6379
+      - --basic_auth=admin:admin
+    ports:
+      - "5555:5555"
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+#     app:
+#       build: . 
+#       restart: unless-stopped
+#       ports:
+#         - "80:8000"
+#       environment:
+#         # - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/koppen
+#         - ENVIRONMENT=production
+# #   db:
+#     image: postgres:16-alpine
+#     restart: unless-stopped
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     environment:
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_PASSWORD=${DB_PASSWORD}
+#       - POSTGRES_DB=koppen
+#     expose:
+#       - "5432"
 
+volumes:
+  sqlite_data: 

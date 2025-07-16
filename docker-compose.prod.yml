@@ -6,8 +6,10 @@ services:
     restart: unless-stopped
     ports:
       - "80:8000"
+    volumes:
+      - sqlite_data:/app/fastapi.db
     environment:
-      # - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/koppen
+      - DATABASE_URL=sqlite+aiosqlite:////app/fastapi.db
       - ENVIRONMENT=production
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_USER=${SMTP_USER}
@@ -26,10 +28,13 @@ services:
   celery_worker:
     image: cr.yandex/crpdcq8rd3suju9jjn8k/koppen:latest
     command: celery -A celery_app.celery_app worker --loglevel=info
+    volumes:
+      - sqlite_data:/app/fastapi.db
     depends_on:
       redis:
         condition: service_healthy
     environment:
+      - DATABASE_URL=sqlite+aiosqlite:////app/fastapi.db
       - ENVIRONMENT=production
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_USER=${SMTP_USER}
@@ -37,10 +42,13 @@ services:
   celery_beat:
     image: cr.yandex/crpdcq8rd3suju9jjn8k/koppen:latest
     command: celery -A celery_app.celery_app beat --loglevel=info
+    volumes:
+      - sqlite_data:/app/fastapi.db
     depends_on:
       redis:
         condition: service_healthy
     environment:
+      - DATABASE_URL=sqlite+aiosqlite:////app/fastapi.db
       - ENVIRONMENT=production
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_USER=${SMTP_USER}
@@ -81,5 +89,5 @@ services:
 #     expose:
 #       - "5432"
 
-# volumes:
-#   postgres_data:
+volumes:
+  sqlite_data:
