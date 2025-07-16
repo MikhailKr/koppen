@@ -19,9 +19,11 @@ celery_app.conf.update(
     enable_utc=True,
 )
 
+
 # Example task
 def test_task():
     print("Celery is working!")
     return "Hello from Celery!"
+
 
 celery_app.task(test_task)
