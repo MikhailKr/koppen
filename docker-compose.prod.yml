@@ -7,7 +7,7 @@ services:
     ports:
       - "80:8000"
     volumes:
-      - sqlite_data:/app/fastapi.db
+      - sqlite_data:/app/
     environment:
       - DATABASE_URL=sqlite+aiosqlite:////app/fastapi.db
       - ENVIRONMENT=production
@@ -29,7 +29,7 @@ services:
     image: cr.yandex/crpdcq8rd3suju9jjn8k/koppen:latest
     command: celery -A celery_app.celery_app worker --loglevel=info
     volumes:
-      - sqlite_data:/app/fastapi.db
+      - sqlite_data:/app/
     depends_on:
       redis:
         condition: service_healthy
@@ -43,7 +43,7 @@ services:
     image: cr.yandex/crpdcq8rd3suju9jjn8k/koppen:latest
     command: celery -A celery_app.celery_app beat --loglevel=info
     volumes:
-      - sqlite_data:/app/fastapi.db
+      - sqlite_data:/app/
     depends_on:
       redis:
         condition: service_healthy
