@@ -1,6 +1,6 @@
 import { useGetForecastHistoryApiForecastHistoryWindFarmIdGetQuery } from "../../shared/api/api";
 
-export const useForecastHistory = (windFarmId: number, forecastId?: number) => {
+export const useForecastHistory = (windFarmId: number, _forecastId?: number) => {
   const {
     isLoading,
     isError,
