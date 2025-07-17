@@ -61,10 +61,18 @@ def create_admin(app: FastAPI) -> None:
 
 app.include_router(main_router)
 create_admin(app)
-app.mount("/static", StaticFiles(directory="static", html=False), name="static")
+app.mount(
+    "/static",
+    StaticFiles(directory="static", html=True),
+    name="spa",
+)
 
 
-# Serve index.html for frontend routes
+@app.get("/")
+async def serve_root():
+    return FileResponse("static/index.html")
+
+
 @app.get("/{full_path:path}")
 async def serve_spa(full_path: str, request: Request):
     if full_path.startswith("api") or full_path.startswith("admin"):
